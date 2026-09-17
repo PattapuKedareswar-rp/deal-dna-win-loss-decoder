@@ -21,7 +21,7 @@ from .schema import DealDNA, Direction
 _DIRECTION = {
     Direction.POSITIVE: ("#2E8B57", "▲", "WIN"),
     Direction.NEGATIVE: ("#D2402A", "▼", "RISK"),
-    Direction.NEUTRAL: ("#082649", "●", "NEUTRAL"),
+    Direction.NEUTRAL: ("#1A1A1A", "●", "NEUTRAL"),
     Direction.MIXED: ("#E8A21A", "◆", "MIXED"),
 }
 _CATEGORY_ICON = {
@@ -65,7 +65,7 @@ _TEMPLATE = """<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Deal DNA — {{ d.cycle_id }} {{ d.account }}</title>
 <style>
- :root{--navy:#082649;--ink:#0A1420;--amber:#AE6B29;--link:#2E6FB0;
+ :root{--navy:#E8730C;--ink:#0A1420;--amber:#AE6B29;--link:#2E6FB0;
   --success:#2E8B57;--warning:#E8A21A;--error:#D2402A;}
  body{font-family:Calibri,'Segoe UI',sans-serif;color:var(--ink);margin:0;background:#fff;}
  header{background:var(--navy);color:#fff;padding:18px 24px;}
@@ -88,7 +88,7 @@ _TEMPLATE = """<!doctype html>
  .card{border:1px solid #d7dee6;border-left:5px solid var(--navy);border-radius:6px;
   padding:12px 14px;margin:10px 0;}
  .card.win{border-left-color:var(--success);} .card.risk{border-left-color:var(--error);}
- .card.neutral{border-left-color:var(--navy);} .card.mixed{border-left-color:var(--warning);}
+ .card.neutral{border-left-color:#1A1A1A;} .card.mixed{border-left-color:var(--warning);}
  .card:target{box-shadow:0 0 0 3px var(--amber);}
  .meta{font-size:12px;color:#5a6572;} blockquote{margin:6px 0;padding-left:10px;
   border-left:3px solid var(--amber);font-style:italic;}
@@ -122,7 +122,7 @@ _TEMPLATE = """<!doctype html>
  <div class="legend">
   Direction (color + icon + text): <b style="border-color:#2E8B57;color:#2E8B57">▲ WIN</b>
   · <b style="border-color:#D2402A;color:#D2402A">▼ RISK</b>
-  · <b style="border-color:#082649;color:#082649">● NEUTRAL</b>
+  · <b style="border-color:#1A1A1A;color:#1A1A1A">● NEUTRAL</b>
   · <b style="border-color:#E8A21A;color:#E8A21A">◆ MIXED</b>
  </div>
 

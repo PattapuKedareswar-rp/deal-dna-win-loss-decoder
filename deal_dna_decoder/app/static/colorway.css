@@ -1,16 +1,16 @@
-/* RP Colorway tokens — presentation only. Never signal state by color alone. */
+/* Orange-forward theme (orange + black + white). Never signal state by color alone. */
 :root {
-  --navy: #082649;
-  --navy2: #0d3a6b;
-  --ink: #0A1420;
-  --amber: #AE6B29;
-  --amber-lt: #D9A440;
-  --link: #2E6FB0;
+  --navy: #E8730C;   /* primary orange (anchor) */
+  --navy2: #C25309;  /* deep orange for gradients */
+  --ink: #1A1A1A;    /* near-black text */
+  --amber: #B45309;  /* burnt-orange accent (underlines / notes) */
+  --amber-lt: #F59E0B;
+  --link: #1A1A1A;   /* rep-reviewed chip -> black (kept distinct from orange) */
   --success: #2E8B57;
   --warning: #E8A21A;
   --error: #D2402A;
-  --paper: #F5F6FB;
-  --line: #D0D8EF;
+  --paper: #FFFFFF;
+  --line: #EADFD3;   /* warm light border */
 }
 
 html, body, [class*="css"] {
@@ -22,7 +22,7 @@ html, body, [class*="css"] {
 .rp-hero {
   background: linear-gradient(120deg, var(--navy) 0%, var(--navy2) 100%);
   color: #fff; padding: 20px 26px; border-radius: 12px; margin-bottom: 6px;
-  box-shadow: 0 2px 10px rgba(8,38,73,.18);
+  box-shadow: 0 2px 10px rgba(232,115,12,.22);
 }
 .rp-hero h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: .2px; }
 .rp-hero .sub { opacity: .85; font-size: 13px; margin-top: 4px; }
@@ -30,17 +30,17 @@ html, body, [class*="css"] {
   border:1px solid rgba(255,255,255,.28); border-radius: 999px; padding: 2px 10px;
   font-size: 11px; margin-right: 6px; }
 
-.rp-title { color: var(--navy); font-weight: bold; }
+.rp-title { color: var(--ink); font-weight: bold; }
 .rp-note { color: var(--amber); font-size: 12px; }
-.rp-section { color: var(--navy); font-weight: 700; font-size: 18px;
-  border-bottom: 2px solid var(--amber); padding-bottom: 4px; margin: 18px 0 8px; }
+.rp-section { color: var(--ink); font-weight: 700; font-size: 18px;
+  border-bottom: 2px solid var(--navy); padding-bottom: 4px; margin: 18px 0 8px; }
 
 /* Metric / KPI cards */
 .rp-kpis { display:flex; gap: 12px; flex-wrap: wrap; }
 .rp-kpi { background: #fff; border: 1px solid var(--line); border-top: 4px solid var(--navy);
   border-radius: 10px; padding: 12px 16px; min-width: 120px; flex: 1; }
 .rp-kpi .v { font-size: 26px; font-weight: 800; color: var(--navy); line-height: 1; }
-.rp-kpi .l { font-size: 12px; color: #495E83; margin-top: 4px; }
+.rp-kpi .l { font-size: 12px; color: #6B5B4A; margin-top: 4px; }
 .rp-kpi.good { border-top-color: var(--success); }
 .rp-kpi.bad  { border-top-color: var(--error); }
 .rp-kpi.warn { border-top-color: var(--warning); }
@@ -55,10 +55,10 @@ html, body, [class*="css"] {
 .rp-bc.hot { border-left-color: var(--error); }
 .rp-bc.mid { border-left-color: var(--warning); }
 .rp-bc.cool { border-left-color: var(--success); }
-.rp-bc h4 { margin: 0 0 4px; color: var(--navy); font-size: 16px; }
-.rp-bc .meta { font-size: 12px; color:#495E83; }
+.rp-bc h4 { margin: 0 0 4px; color: var(--ink); font-size: 16px; }
+.rp-bc .meta { font-size: 12px; color:#6B5B4A; }
 .rp-bc blockquote { margin: 6px 0 0; padding-left: 10px; border-left: 3px solid var(--line);
-  color:#33455f; font-style: italic; font-size: 13px; }
+  color:#3a3a3a; font-style: italic; font-size: 13px; }
 
 /* Status chips: color is always paired with a text label. */
 .rp-status { display: inline-block; padding: 3px 12px; border-radius: 12px;
@@ -79,7 +79,7 @@ html, body, [class*="css"] {
 /* Review progress stepper */
 .rp-steps { display:flex; gap:8px; align-items:center; margin: 6px 0 2px; }
 .rp-step { font-size:12px; padding:4px 10px; border-radius:999px; border:1px solid var(--line);
-  color:#5B6470; background:#fff; }
+  color:#6B5B4A; background:#fff; }
 .rp-step.on { background: var(--navy); color:#fff; border-color: var(--navy); }
 .rp-arrow { color:#9aa7bf; }
 
