@@ -74,9 +74,16 @@ def test_radar_only_surfaces_recurring_signals():
     deals = [synthesize_cycle(c) for c in list_cycles()]
     report = build_radar(deals)
     for s in report.recurring_hesitations:
-        assert s.count >= 2
+        assert s.accounts >= 2  # trend needs >= 2 distinct accounts
     for s in report.alternative_software:
-        assert s.count >= 2
+        assert s.accounts >= 2
+
+
+def test_audit_verdict_reflects_review_status():
+    dna = synthesize_cycle("cyc-002")  # clean Won deal, no issues
+    assert audit_dealdna(dna).verdict == PASS_WITH_REVIEW  # Needs Review by default
+    dna.review.status = "Manager Validated"
+    assert audit_dealdna(dna).verdict == PASS
 
 
 def test_intake_gate_surfaces_consent_and_completeness_issues():

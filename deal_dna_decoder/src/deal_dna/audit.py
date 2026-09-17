@@ -54,9 +54,16 @@ def audit_dealdna(d: DealDNA) -> AuditResult:
 
     if any("missing quote" in x or "not sourced" in x for x in issues):
         return AuditResult(BLOCKED, issues)
-    if issues or d.review.status in ("Needs Review", "Blocked"):
-        return AuditResult(PASS_WITH_REVIEW, issues or ["Human review required before sharing."])
-    return AuditResult(PASS, [])
+    if issues:
+        return AuditResult(PASS_WITH_REVIEW, issues)
+    if d.review.status == "Manager Validated":
+        return AuditResult(PASS, [])
+    reason = {
+        "Needs Review": "Pending human review — no rep decisions recorded yet.",
+        "Rep Reviewed": "Rep reviewed; awaiting manager validation.",
+        "Blocked": "Blocked by the intake gate (consent / completeness / mapping).",
+    }.get(d.review.status, f"Pending review (status: {d.review.status}).")
+    return AuditResult(PASS_WITH_REVIEW, [reason])
 
 
 @dataclass

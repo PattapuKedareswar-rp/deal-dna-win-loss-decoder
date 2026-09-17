@@ -139,6 +139,12 @@ def _hbar(pairs, color: str, pct: bool = False):
             .configure_view(strokeWidth=0).configure_axis(grid=False))
 
 
+def _bar(pairs, color: str, pct: bool = False) -> None:
+    chart = _hbar(pairs, color, pct)
+    if chart is not None:
+        st.altair_chart(chart, width="stretch")
+
+
 # ---------- Portfolio page ----------
 def page_portfolio() -> None:
     report, radar = _portfolio()
@@ -163,21 +169,15 @@ def page_portfolio() -> None:
                "Product bars show closed-deal count (n).")
 
     _h("Win rate by product")
-    ch = _hbar([(f"{p} (n={n})", wr) for p, wr, n in report.win_rate_by_product], "#082649", pct=True)
-    if ch is not None:
-        st.altair_chart(ch, use_container_width=True)
+    _bar([(f"{p} (n={n})", wr) for p, wr, n in report.win_rate_by_product], "#082649", pct=True)
 
     c1, c2 = st.columns(2, gap="large")
     with c1:
         _h("Top win drivers", "Positive signals on Won deals")
-        ch = _hbar(report.top_win_drivers, "#2E8B57")
-        if ch is not None:
-            st.altair_chart(ch, use_container_width=True)
+        _bar(report.top_win_drivers, "#2E8B57")
     with c2:
         _h("Top loss drivers", "Negative signals on Lost deals")
-        ch = _hbar(report.top_loss_drivers, "#D2402A")
-        if ch is not None:
-            st.altair_chart(ch, use_container_width=True)
+        _bar(report.top_loss_drivers, "#D2402A")
 
     _h("Competitor battlecards",
        "Where we are exposed and why — each with evidence. A mention is not a loss reason.")
@@ -195,9 +195,7 @@ def page_portfolio() -> None:
     c3, c4 = st.columns(2, gap="large")
     with c3:
         _h("Enablement coaching hotspots", "Recurring rep-facing friction to train on")
-        ch = _hbar(report.coaching_hotspots, "#AE6B29")
-        if ch is not None:
-            st.altair_chart(ch, use_container_width=True)
+        _bar(report.coaching_hotspots, "#AE6B29")
     with c4:
         _h("Market-signal radar", radar.note)
         for s in radar.recurring_hesitations:
@@ -331,18 +329,18 @@ def _tab_review(d: DealDNA, cycle_id: str, role: str, actor_name: str) -> None:
                                  placeholder="Required for Add context / Challenge", disabled=not is_rep)
             cols = st.columns(3)
             if cols[0].button("✔ Confirm", key=f"confirm-{cycle_id}-{i}",
-                              use_container_width=True, disabled=not is_rep):
+                              width="stretch", disabled=not is_rep):
                 _record(d, actor_name, "confirmed", drv.category.value, "")
                 st.rerun()
             if cols[1].button("＋ Add context", key=f"context-{cycle_id}-{i}",
-                              use_container_width=True, disabled=not is_rep):
+                              width="stretch", disabled=not is_rep):
                 if note.strip():
                     _record(d, actor_name, "added_context", drv.category.value, note.strip())
                     st.rerun()
                 else:
                     st.warning("Add a note before submitting context.")
             if cols[2].button("✎ Challenge", key=f"challenge-{cycle_id}-{i}",
-                              use_container_width=True, disabled=not is_rep):
+                              width="stretch", disabled=not is_rep):
                 if note.strip():
                     _record(d, actor_name, "challenged", drv.category.value, note.strip())
                     st.rerun()
@@ -376,7 +374,7 @@ def _tab_audit(d: DealDNA) -> None:
     if d.review.corrections:
         st.dataframe(pd.DataFrame([{"at": c.at, "actor": c.actor, "action": c.action,
                                     "field": c.field, "note": c.note} for c in d.review.corrections]),
-                     use_container_width=True, hide_index=True)
+                     width="stretch", hide_index=True)
     else:
         st.info("No corrections yet. Use the review tab to build the audit trail.")
     if d.unknowns:
