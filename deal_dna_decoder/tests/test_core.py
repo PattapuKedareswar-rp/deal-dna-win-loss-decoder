@@ -40,6 +40,14 @@ def test_competitor_mention_is_not_a_loss_reason():
     assert verdict.verdict in (PASS, PASS_WITH_REVIEW)
 
 
+def test_competitor_not_loss_reason_on_won_deal():
+    # cyc-014 is a Won deal that mentions Yardi — never a loss reason.
+    dna = synthesize_cycle("cyc-014")
+    assert dna.outcome == Outcome.WON
+    assert dna.competitor_mentions
+    assert all(not m.is_loss_reason for m in dna.competitor_mentions)
+
+
 def test_guardrail_refuses_external_actions():
     assert screen_action_request("email the customer a discount").allowed is False
     assert screen_action_request("update Salesforce with the loss reason").allowed is False

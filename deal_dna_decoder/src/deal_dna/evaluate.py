@@ -104,4 +104,8 @@ def format_report(r: EvalReport) -> str:
     lines.append(f"Top-driver agreement:        {r.agreement:.0%} ({r.agree}/{r.total})")
     lines.append(f"Citation coverage:           {r.citation_coverage:.0%}")
     lines.append(f"Competitor false-alarm rate: {r.competitor_false_alarm_rate:.0%}")
+    lines.append("")
+    lines.append("Limits: gold set is SMALL and SYNTHETIC, and the decisiveness priority was tuned on "
+                 "it — treat these as directional, not production accuracy. Real validation needs an "
+                 "independent human-labeled sample split by cycle_id.")
     return "\n".join(lines)

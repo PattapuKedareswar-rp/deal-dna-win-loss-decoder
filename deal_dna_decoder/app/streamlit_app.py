@@ -159,9 +159,11 @@ def page_portfolio() -> None:
     k[2].markdown(_kpi("Lost", report.lost, "bad"), unsafe_allow_html=True)
     k[3].markdown(_kpi("Stalled", report.stalled, "warn"), unsafe_allow_html=True)
     k[4].markdown(_kpi("Cycles", report.total_cycles), unsafe_allow_html=True)
+    st.caption("⚠ Synthetic demo data, small sample — metrics are directional, not production accuracy. "
+               "Product bars show closed-deal count (n).")
 
     _h("Win rate by product")
-    ch = _hbar([(p, wr) for p, wr, n in report.win_rate_by_product], "#082649", pct=True)
+    ch = _hbar([(f"{p} (n={n})", wr) for p, wr, n in report.win_rate_by_product], "#082649", pct=True)
     if ch is not None:
         st.altair_chart(ch, use_container_width=True)
 
@@ -204,6 +206,14 @@ def page_portfolio() -> None:
         for s in radar.alternative_software:
             st.markdown(f'<div class="rp-card">🏷 <b>{s.label}</b> — mentioned in {s.count} cycles</div>',
                         unsafe_allow_html=True)
+
+    with st.expander("Methodology & limits"):
+        st.markdown(
+            "- Data is **synthetic demo** unless an approved export is ingested (`--ingest`).\n"
+            "- Drivers are evidence-cited; a competitor mention is **never** auto-treated as a loss reason.\n"
+            "- Aggregates are **directional on a small sample** — not a production predictive model.\n"
+            "- The evaluation gold set is author-labeled and the priority logic is tuned on it; "
+            "real validation needs an independent human-labeled sample split by cycle.")
 
     st.write("")
     st.download_button("⬇ Download portfolio dashboard (HTML)",

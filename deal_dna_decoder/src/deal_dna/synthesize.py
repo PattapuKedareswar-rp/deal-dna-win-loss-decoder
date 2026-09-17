@@ -63,6 +63,12 @@ def synthesize_cycle(cycle_id: str) -> DealDNA:
     drivers, mentions = _collect(cycle)
     _calibrate_confidence(drivers)
 
+    # A competitor mention can only be a loss reason on a Lost deal (abstention guard).
+    if outcome != Outcome.LOST:
+        for m in mentions:
+            m.is_loss_reason = False
+            m.note = "Mention only; not established as a loss reason."
+
     review = Review(status="Needs Review")
     if not intake.ok:
         review.status = "Blocked" if intake.transcript_status == TranscriptStatus.NONE else "Needs Review"
