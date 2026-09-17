@@ -12,8 +12,15 @@ with Person B, and be submission-ready. Ordered by priority.
 - 12 synthetic cycles, 7 offline tests passing, fixture for Person B, README. Pushed to `main`.
 - **A1 ✅** risk-mitigation heuristic fixed (Won cycles no longer flagged as risk), confidence
   calibration (single-mention → low), stronger `unknowns` (missing ROI on Won / pricing on Lost).
-- **A3 ✅** evaluation harness (`--evaluate`): **100% top-driver agreement (5/5)**, **100% citation
-  coverage**, **0% competitor false-alarm** + 3 tests. Now 10/10 tests pass. Commit `8d3023c`.
+- **A3 ✅** evaluation harness (`--evaluate`): **100% top-driver agreement (7/7)**, **100% citation
+  coverage**, **0% competitor false-alarm** + 3 tests. Commit `8d3023c`.
+- **A2 ✅** live OpenAI (gpt-4o) path validated on cyc-001; clean offline fallback; key git-ignored.
+- **A4 ✅** grew to 18 cycles/22 calls (multi-call Won, competitor-mention-no-loss, two Needs-Review
+  cycles); intake gate surfaces completeness issues. Commit `f8fc8f4`.
+- **A6 ✅** narrated `--demo` walkthrough + Person B integration hooks in `run.py`; recreated
+  `00_Admin/STATUS.md` (3-test evidence log) + `03_Final_Submission/README.md`. Commit `b3ca4be`.
+- **A5 (hooks) ✅** `run.py` auto-calls `enrich_crossfunctional`/`render_briefing` if Person B's
+  modules exist — zero-touch integration when they land.
 
 ---
 
@@ -67,10 +74,10 @@ with Person B, and be submission-ready. Ordered by priority.
 ## Your immediate next 3 tasks
 1. ~~Phase A1.1 (fix the `risk` direction heuristic)~~ ✅ done.
 2. ~~Phase A3.7 (evaluation harness)~~ ✅ done — 100% agreement / 100% citations / 0% false-alarm.
-3. **Phase A2.4 (validate the OpenAI key path)** — needs the provided key in a local `.env`; run
-   `python -m deal_dna.run --cycle cyc-001` with `DEAL_DNA_OFFLINE=0` and confirm clean fallback.
+3. ~~Phase A2.4 (validate the OpenAI key path)~~ ✅ done. ~~A4~~ ✅ done. ~~A6 scaffolding~~ ✅ done.
 
-**Then:** A4 (grow/realism of data) → A5 (integrate Person B at Sync 2/3) → A6 (submission: STATUS.md
-3-test log, final README, MVP demo script).
+**Remaining:** A5 Sync 3 — when Person B pushes `crossfunction.py` + `render.py` + `app/`, pull, run
+`python -m deal_dna.run --all` (hooks auto-enrich + render), then run the MVP demo for reviewers and
+post the final package to the team Teams channel.
 
 Push after each so Person B always sees a stable `main`.
