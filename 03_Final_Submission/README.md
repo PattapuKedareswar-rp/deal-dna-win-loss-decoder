@@ -27,6 +27,33 @@ An **agentic, evidence-first pipeline** that produces a citation-locked `DealDNA
 Person B adds the five cross-functional feeds, the **Deal DNA genome** view, and the rep→manager
 review loop (integrated through a fixed seam).
 
+## Architecture
+
+```mermaid
+flowchart LR
+    SRC[Approved export .txt/.vtt + Salesforce CSV, or synthetic demo] --> N[normalize]
+    N --> I[intake: consent / completeness gate]
+    I --> E[evidence coder: OpenAI or offline]
+    E --> S[synthesize: roll up by cycle]
+    S --> DNA[(DealDNA JSON, citation-locked)]
+    DNA --> X[enrich: 5 feeds + seller card + handoff]
+    DNA --> AU[audit + advisory guardrail]
+    DNA --> RA[radar: cross-cycle market signals]
+    DNA --> PF[portfolio intelligence]
+    DNA --> AG[agent: OpenAI tool-calling loop]
+    X --> UI[Streamlit app: Portfolio / Ask Deal DNA / Deal Review]
+    AU --> UI
+    RA --> UI
+    PF --> UI
+    AG --> UI
+    UI --> RV[rep to manager review + audit trail, persisted]
+```
+
+**Pipeline:** transcripts → normalize → intake gate → evidence coder → cycle synthesizer → citation-locked
+`DealDNA` → enrichment (feeds/coach/handoff) + audit/guardrail + radar + portfolio + agent → app + review loop.
+The math is deterministic; the LLM explains and extracts. Salesforce is the outcome authority; a competitor
+mention is never auto-treated as a loss reason; nothing writes back to CRM.
+
 ## Demonstrated result (measured on synthetic data)
 - **Top-driver agreement vs human gold set: 100% (7/7)** — small, author-labeled synthetic gold set;
   directional, not production accuracy.
