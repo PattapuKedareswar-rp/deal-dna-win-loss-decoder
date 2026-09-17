@@ -109,6 +109,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--write-fixture", action="store_true",
                     help="Write data/fixtures/sample_dealdna.json for Person B")
     ap.add_argument("--check", metavar="INSTRUCTION", help="Screen an instruction against the guardrail")
+    ap.add_argument("--ask", metavar="QUESTION", help="Ask the Deal DNA agent a question (tool-calling)")
     ap.add_argument("--ingest", action="store_true",
                     help="Ingest approved exports from data/approved_exports/ (the real data path)")
     ap.add_argument("--outdir", default=str(config.OUTPUTS_DIR), help="Output directory")
@@ -133,6 +134,14 @@ def main(argv: list[str] | None = None) -> int:
     if not cycles:
         print("No cycles found. Run:  python data/generate_data.py")
         return 1
+
+    if args.ask:
+        from .agent import ask
+        res = ask(args.ask)
+        tools = ", ".join(tc.name for tc in res.tool_calls) or "none"
+        print(f"[engine: {res.engine}] tools called: {tools}\n")
+        print(res.answer)
+        return 0
 
     if args.evaluate:
         from .evaluate import evaluate, format_report

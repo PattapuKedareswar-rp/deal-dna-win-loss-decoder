@@ -425,6 +425,42 @@ def _render_feeds(d: DealDNA) -> None:
         st.caption("Implementation handoff: not applicable (deal not Won).")
 
 
+def page_ask() -> None:
+    from deal_dna.agent import ask
+
+    st.markdown(
+        f'<div class="rp-hero"><h1>Ask Deal DNA</h1>'
+        f'<div class="sub">A read-only agent that plans, calls analytics tools, and answers with '
+        f'evidence. It never emails, writes to Salesforce, or contacts customers.</div>'
+        f'<div style="margin-top:10px"><span class="pill">🧠 Engine: {_engine_label()}</span>'
+        f'{_data_pill()}<span class="pill">tool-calling</span></div></div>',
+        unsafe_allow_html=True)
+    st.write("")
+
+    examples = ["Where are we most exposed to Entrata?", "What is our win rate by product?",
+                "Why did we lose cyc-004?", "What should enablement coach on?"]
+    cols = st.columns(len(examples))
+    for i, ex in enumerate(examples):
+        if cols[i].button(ex, key=f"ask-ex-{i}", use_container_width=True):
+            st.session_state["ask_q"] = ex
+
+    q = st.text_input("Your question", key="ask_q",
+                      placeholder="e.g. Where are we most exposed to Entrata?")
+    if st.button("Ask Deal DNA", type="primary") and q.strip():
+        with st.spinner("The agent is calling analytics tools…"):
+            res = ask(q.strip())
+        st.markdown(f'<span class="rp-status rep-reviewed">engine: {res.engine}</span>',
+                    unsafe_allow_html=True)
+        if res.tool_calls:
+            with st.expander(f"🔧 Tools the agent called ({len(res.tool_calls)})", expanded=True):
+                for tc in res.tool_calls:
+                    arglist = ", ".join(f"{k}={v}" for k, v in tc.args.items())
+                    st.markdown(f"- **{tc.name}**({arglist})")
+        st.markdown("#### Answer")
+        st.markdown(res.answer)
+        st.caption("Grounded in read-only analytics · " + sources.provenance_note())
+
+
 def main() -> None:
     st.set_page_config(page_title="Deal DNA", layout="wide", page_icon="🧬")
     st.markdown(f"<style>{_CSS}</style>", unsafe_allow_html=True)
@@ -435,15 +471,19 @@ def main() -> None:
 
     with st.sidebar:
         st.markdown("### 🧬 Deal DNA")
-        page = st.radio("Workspace", ["📊 Executive Portfolio", "🔬 Deal Review"], label_visibility="collapsed")
+        page = st.radio("Workspace",
+                        ["📊 Executive Portfolio", "🤖 Ask Deal DNA", "🔬 Deal Review"],
+                        label_visibility="collapsed")
         st.divider()
 
     if page.startswith("📊"):
         page_portfolio()
+    elif page.startswith("🤖"):
+        page_ask()
     else:
         page_review()
 
-    st.markdown(f'<div class="rp-note" style="margin-top:18px">{config.DATA_NOTE} · '
+    st.markdown(f'<div class="rp-note" style="margin-top:18px">{sources.provenance_note()} · '
                 f'advisory &amp; read-only · no CRM write-back / outreach</div>',
                 unsafe_allow_html=True)
 
