@@ -10,6 +10,10 @@ with Person B, and be submission-ready. Ordered by priority.
 - Pipeline: `normalize → intake → evidence → synthesize` (rollup by cycle).
 - `audit` (traceability + action guardrail), `radar` (recurring-signal, false-alarm guard), `run` CLI.
 - 12 synthetic cycles, 7 offline tests passing, fixture for Person B, README. Pushed to `main`.
+- **A1 ✅** risk-mitigation heuristic fixed (Won cycles no longer flagged as risk), confidence
+  calibration (single-mention → low), stronger `unknowns` (missing ROI on Won / pricing on Lost).
+- **A3 ✅** evaluation harness (`--evaluate`): **100% top-driver agreement (5/5)**, **100% citation
+  coverage**, **0% competitor false-alarm** + 3 tests. Now 10/10 tests pass. Commit `8d3023c`.
 
 ---
 
@@ -61,8 +65,12 @@ with Person B, and be submission-ready. Ordered by priority.
 ---
 
 ## Your immediate next 3 tasks
-1. Phase A1.1 (fix the `risk` direction heuristic) + re-run tests and `--radar`.
-2. Phase A2.4 (validate the OpenAI key path on one cycle).
-3. Phase A3.7 (evaluation harness) — it's the strongest single differentiator you can add solo.
+1. ~~Phase A1.1 (fix the `risk` direction heuristic)~~ ✅ done.
+2. ~~Phase A3.7 (evaluation harness)~~ ✅ done — 100% agreement / 100% citations / 0% false-alarm.
+3. **Phase A2.4 (validate the OpenAI key path)** — needs the provided key in a local `.env`; run
+   `python -m deal_dna.run --cycle cyc-001` with `DEAL_DNA_OFFLINE=0` and confirm clean fallback.
+
+**Then:** A4 (grow/realism of data) → A5 (integrate Person B at Sync 2/3) → A6 (submission: STATUS.md
+3-test log, final README, MVP demo script).
 
 Push after each so Person B always sees a stable `main`.
