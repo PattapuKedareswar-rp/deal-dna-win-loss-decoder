@@ -100,9 +100,9 @@ def _parse_vtt(text: str, source: str) -> list[Turn]:
 
 def load_call(path: Path) -> Call:
     meta_path = path.parent / (path.stem + ".metadata.json")
-    metadata = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else {}
+    metadata = json.loads(meta_path.read_text(encoding="utf-8-sig")) if meta_path.exists() else {}
     source = _rel(path)
-    text = path.read_text(encoding="utf-8")
+    text = path.read_text(encoding="utf-8-sig")
     if path.suffix.lower() == ".vtt":
         turns = _parse_vtt(text, source)
     else:

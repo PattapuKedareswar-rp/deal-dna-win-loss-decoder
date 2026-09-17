@@ -10,11 +10,20 @@ To run on real, approved data:
      /teams/Q3AIHackathon/Shared Documents/Deal DNA_ The Win-Loss Decoder for Sales/Transcripts/
    Save each call as .txt or .vtt (speaker-attributed, timestamped).
 
-2) Place them here, one folder per sales cycle:
-     data/approved_exports/transcripts/<cycle_id>/<call_id>.vtt   (or .txt)
+2) Place them here. TWO shapes are supported:
+
+   EASIEST (flat) — just dump the files, one file = one sales cycle:
+     data/approved_exports/transcripts/<any-name>.txt   (or .vtt)
+     data/approved_exports/index.csv   (OPTIONAL mapping, recommended)
+
+   index.csv columns (any subset): file, cycle_id, opportunity_id, account, product,
+     stage, outcome, source_url, consent, transcript_status
+     -> 'file' matches the transcript filename; 'outcome' is Won/Lost/Stalled/Needs Review.
+     If outcome is unknown it defaults to 'Needs Review' (never guessed).
+
+   OR nested (one folder per cycle):
+     data/approved_exports/transcripts/<cycle_id>/<call_id>.vtt|.txt
      data/approved_exports/transcripts/<cycle_id>/<call_id>.metadata.json
-   metadata.json should include: cycle_id, call_id, opportunity_id, account, call_date,
-   source_system, source_url, product, stage, consent, transcript_status.
 
 3) Export read-only Salesforce outcomes to:
      data/approved_exports/salesforce/opportunities.csv

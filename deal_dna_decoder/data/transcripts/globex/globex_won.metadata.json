@@ -1,0 +1,14 @@
+{
+  "cycle_id": "globex",
+  "call_id": "globex_won",
+  "opportunity_id": "006A701",
+  "account": "Globex",
+  "call_date": "",
+  "source_system": "SharePoint (approved export)",
+  "source_url": "https://sharepoint/globex",
+  "product": "AI Revenue Management",
+  "stage": "",
+  "consent": "approved",
+  "transcript_status": "Full transcript available",
+  "outcome": "Won"
+}

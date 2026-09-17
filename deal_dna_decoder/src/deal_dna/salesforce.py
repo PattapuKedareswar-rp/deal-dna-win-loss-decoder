@@ -19,7 +19,7 @@ def _load() -> dict[str, dict]:
     rows: dict[str, dict] = {}
     if not path.exists():
         return rows
-    with path.open(newline="", encoding="utf-8") as f:
+    with path.open(newline="", encoding="utf-8-sig") as f:
         for row in csv.DictReader(f):
             rows[row["opportunity_id"]] = row
     return rows
