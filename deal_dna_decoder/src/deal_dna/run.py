@@ -109,12 +109,20 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--write-fixture", action="store_true",
                     help="Write data/fixtures/sample_dealdna.json for Person B")
     ap.add_argument("--check", metavar="INSTRUCTION", help="Screen an instruction against the guardrail")
+    ap.add_argument("--ingest", action="store_true",
+                    help="Ingest approved exports from data/approved_exports/ (the real data path)")
     ap.add_argument("--outdir", default=str(config.OUTPUTS_DIR), help="Output directory")
     args = ap.parse_args(argv)
 
     outdir = Path(args.outdir)
+    from . import sources
     mode = "OFFLINE (deterministic)" if config.is_offline() else f"OpenAI ({config.OPENAI_MODEL})"
-    print(f"Deal DNA — mode: {mode}\n{config.DATA_NOTE}\n")
+    print(f"Deal DNA — engine: {mode} | data: {sources.provenance_note()}\n")
+
+    if args.ingest:
+        info = sources.ingest_approved()
+        print(f"Ingested approved export: {info['cycles']} cycles, {info['calls']} calls.")
+        return 0
 
     if args.check is not None:
         screen = screen_action_request(args.check)

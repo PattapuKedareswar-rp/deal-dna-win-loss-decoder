@@ -4,7 +4,7 @@
   "opportunity_id": "006A009",
   "account": "Maplewood Residences",
   "call_date": "2026-08-09",
-  "source_system": "SharePoint (synthetic)",
+  "source_system": "SYNTHETIC demo (fallback)",
   "product": "Leasing & Marketing",
   "stage": "Closed Lost",
   "consent": "approved",

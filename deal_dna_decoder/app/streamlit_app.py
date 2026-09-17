@@ -19,7 +19,7 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
-from deal_dna import config
+from deal_dna import config, sources
 from deal_dna.audit import audit_dealdna, screen_action_request
 from deal_dna.crossfunction import enrich_crossfunctional
 from deal_dna.normalize import list_cycles
@@ -98,6 +98,11 @@ def _engine_label() -> str:
     return "Offline heuristics" if config.is_offline() else f"OpenAI agent · {config.OPENAI_MODEL}"
 
 
+def _data_pill() -> str:
+    label = "Approved export" if sources.data_mode() == "approved-export" else "Synthetic demo"
+    return f'<span class="pill">📁 Data: {label}</span>'
+
+
 def _h(title: str, sub: str = "") -> None:
     st.markdown(f'<div class="rp-section">{title}</div>', unsafe_allow_html=True)
     if sub:
@@ -131,7 +136,7 @@ def page_portfolio() -> None:
         f'<div class="sub">Why we win and lose, decoded from sales conversations — '
         f'evidence-backed, advisory, human-in-the-loop.</div>'
         f'<div style="margin-top:10px"><span class="pill">🧠 Engine: {_engine_label()}</span>'
-        f'<span class="pill">SYNTHETIC data</span><span class="pill">read-only</span>'
+        f'{_data_pill()}<span class="pill">read-only</span>'
         f'<span class="pill">no CRM write-back</span></div></div>',
         unsafe_allow_html=True)
     st.write("")
@@ -225,7 +230,7 @@ def page_review() -> None:
     st.markdown('<div class="rp-hero"><h1>Deal DNA — Win/Loss Review</h1>'
                 '<div class="sub">Open a deal to see its evidence genome, run the rep → manager '
                 'review, and route cross-functional actions.</div>'
-                f'<div style="margin-top:10px"><span class="pill">🧠 Engine: {_engine_label()}</span>'
+                f'<div style="margin-top:10px"><span class="pill">🧠 Engine: {_engine_label()}</span>{_data_pill()}'
                 '<span class="pill">advisory</span><span class="pill">human-in-the-loop</span>'
                 '</div></div>', unsafe_allow_html=True)
 

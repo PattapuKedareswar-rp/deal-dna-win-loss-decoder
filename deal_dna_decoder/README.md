@@ -21,12 +21,25 @@ read-only**: it never writes to CRM, never contacts customers, and keeps a human
 
 It runs fully **offline** (deterministic) with no API key, and uses **OpenAI** when a key is present.
 
+## Data: approved export (real) vs synthetic demo (fallback)
+
+Deal DNA analyzes **approved** sales-call evidence connected to **read-only Salesforce** outcomes — it
+never fetches from a live connector or fabricates real data. To run on real data, drop approved
+`.txt`/`.vtt` transcripts + a Salesforce outcome CSV into `data/approved_exports/` (see
+`data/approved_exports/HOW_TO_USE.txt`) and run `python -m deal_dna.run --ingest`. The app/CLI then
+shows **"Data: Approved export"** and preserves source URL, consent, and transcript status. When no
+approved export is present, a clearly-labeled **synthetic demo** set is used so the app still runs.
+Do **not** commit real customer transcripts or credentials.
+
 ## Quick start
 
 ```powershell
 cd deal_dna_decoder
 python -m pip install -e ".[dev]"
-python data/generate_data.py           # create synthetic transcripts + Salesforce map
+python data/generate_data.py           # synthetic DEMO transcripts + Salesforce map (fallback)
+
+# Real data path (approved export): drop files in data/approved_exports/ then:
+python -m deal_dna.run --ingest         # ingest approved .txt/.vtt + Salesforce CSV
 
 # Offline mode needs no key:
 $env:DEAL_DNA_OFFLINE = 1

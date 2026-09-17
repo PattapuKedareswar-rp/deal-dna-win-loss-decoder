@@ -295,7 +295,7 @@ def write_transcripts_and_manifest() -> list[dict]:
                 "cycle_id": c["cycle_id"], "call_id": call_id,
                 "opportunity_id": c["opp"], "account": c["account"],
                 "call_date": c["close_date"] or "2026-08-01",
-                "source_system": "SharePoint (synthetic)",
+                "source_system": "SYNTHETIC demo (fallback)",
                 "product": c["product"], "stage": c["stage"],
                 "consent": c.get("consent", "approved"),
                 "transcript_status": c.get("transcript_status", "Full transcript available"),
