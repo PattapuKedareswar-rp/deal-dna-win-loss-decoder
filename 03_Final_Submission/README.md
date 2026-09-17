@@ -1,0 +1,63 @@
+# Deal DNA: The Win/Loss Decoder for Sales — Final Submission
+
+**Team channel:** DD · **Use case:** Deal DNA: The Win/Loss Decoder for Sales (RealPage Sales Enablement)
+**Repo:** https://github.com/PattapuKedareswar-rp/deal-dna-win-loss-decoder · branch `main`
+**Data:** SYNTHETIC sample data only — not real customer data.
+
+## Start here
+1. `cd deal_dna_decoder && python -m pip install -e ".[dev]"`
+2. `python data/generate_data.py`
+3. `$env:DEAL_DNA_OFFLINE = 1` then `python -m deal_dna.run --demo`
+
+The `--demo` command is the guided walkthrough (a Won, a Lost, and a Stalled cycle, plus the guardrail
+and the evaluation scorecard). It runs **offline with no API key** — the reviewer fallback.
+
+## Problem & user
+Salesforce picklists record *that* a deal was won or lost, but not *why*. The real reasons live in
+sales-call conversations. **Deal DNA** reads approved call transcripts, connects them to read-only
+Salesforce outcomes, and decodes the win/loss drivers with evidence — for Sales Enablement, Product,
+Pricing, Product Marketing, and Implementations. Primary users: sales leaders/enablement + the rep and
+manager who review each deal.
+
+## What we built
+An **agentic, evidence-first pipeline** that produces a citation-locked `DealDNA` per deal:
+`normalize → intake (consent/provenance gate) → evidence coder → cycle synthesizer`, plus `audit`
+(traceability + advisory-only guardrail), `radar` (cross-cycle market signals), and `evaluate`
+(scoring vs a human gold set). Runs on **OpenAI (gpt-4o)** or fully **offline/deterministic**.
+Person B adds the five cross-functional feeds, the **Deal DNA genome** view, and the rep→manager
+review loop (integrated through a fixed seam).
+
+## Demonstrated result (measured on synthetic data)
+- **Top-driver agreement vs human gold set: 100% (7/7).**
+- **Citation coverage: 100%** — every driver carries a verbatim quote + speaker + timestamp + source.
+- **Competitor false-alarm rate: 0%** — a competitor mention is never auto-treated as a loss reason.
+- **11/11 automated tests pass.** Live OpenAI path + offline fallback both verified.
+
+## How judging criteria are met
+| Criterion | Evidence |
+| --- | --- |
+| Win/loss insight quality | `--evaluate`: 100% top-driver agreement; cycle-level rollup (not per call) |
+| Traceability & human review | Citation-locked drivers; rep→manager review loop + audit trail; `Needs Review` gate |
+| Cross-functional usefulness | Five audience feeds + seller coaching card + implementation handoff (Person B) |
+| Theme detection & market signal | `--radar` recurring hesitations + alternative-software mentions with a false-alarm guard |
+| Safety, privacy & governance | Read-only; advisory guardrail refuses CRM write-back/outreach; synthetic data; env-only key |
+
+## Review access & demonstration path
+- No credentials needed: run offline (`DEAL_DNA_OFFLINE=1`) → `python -m deal_dna.run --demo`.
+- Live path: set `OPENAI_API_KEY` in a local `.env` (never committed), `DEAL_DNA_OFFLINE=0`.
+- Evidence log with T-01/T-02/T-03 results: `00_Admin/STATUS.md`.
+
+## Sources, reuse & permissions
+- **Reused:** none (built during the event). **Created:** all code + synthetic data.
+- Real deployment would connect approved **SharePoint** transcripts + read-only **Salesforce**
+  (documented in `DEAL_DNA_MASTER_PROMPT.md`); this prototype uses synthetic transcripts so no
+  customer data is exposed.
+
+## Limits & next step
+- Synthetic data is a pilot/taxonomy, not a production predictive model.
+- Offline extraction is heuristic; the OpenAI path is the primary analyzer.
+- **Next:** connect approved SharePoint/Salesforce sources behind the same schema; pilot with a
+  human-reviewed gold set. **No automated decisions — human review before anything is shared.**
+
+## Recommended next step / owner
+Integrate Person B's review UI end-to-end (Sync 3), then run the MVP demo for reviewers. Owner: team.
