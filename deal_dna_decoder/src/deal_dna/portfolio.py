@@ -150,15 +150,15 @@ def render_portfolio_html(r: PortfolioReport) -> str:
 <title>Deal DNA — Portfolio Intelligence</title>
 <style>
  body{{font-family:Calibri,Segoe UI,sans-serif;margin:0;color:#0A1420;background:#fff}}
- header{{background:#082649;color:#fff;padding:18px 28px}}
+ header{{background:#E8730C;color:#fff;padding:18px 28px}}
  header h1{{margin:0;font-size:22px}} header .note{{opacity:.8;font-size:13px}}
  main{{padding:20px 28px;max-width:1000px}}
- h2{{color:#082649;border-bottom:2px solid #AE6B29;padding-bottom:4px;margin-top:26px}}
+ h2{{color:#1A1A1A;border-bottom:2px solid #E8730C;padding-bottom:4px;margin-top:26px}}
  .kpis{{display:flex;gap:14px;flex-wrap:wrap;margin:12px 0}}
  .kpi{{background:#F5F6FB;border:1px solid #D0D8EF;border-radius:8px;padding:12px 16px;min-width:120px}}
- .kpi .v{{font-size:24px;font-weight:700;color:#082649}} .kpi .l{{font-size:12px;color:#495E83}}
+ .kpi .v{{font-size:24px;font-weight:700;color:#E8730C}} .kpi .l{{font-size:12px;color:#6B5B4A}}
  table{{border-collapse:collapse;width:100%;margin-top:8px;font-size:14px}}
- th,td{{border:1px solid #D0D8EF;padding:6px 10px;text-align:left}} th{{background:#082649;color:#fff}}
+ th,td{{border:1px solid #D0D8EF;padding:6px 10px;text-align:left}} th{{background:#E8730C;color:#fff}}
  tr:nth-child(even){{background:#F5F6FB}}
 </style></head><body>
 <header><h1>Deal DNA — Portfolio Intelligence</h1>

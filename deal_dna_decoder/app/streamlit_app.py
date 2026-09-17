@@ -180,7 +180,7 @@ def page_portfolio() -> None:
                "Product bars show closed-deal count (n).")
 
     _h("Win rate by product")
-    _bar([(f"{p} (n={n})", wr) for p, wr, n in report.win_rate_by_product], "#082649", pct=True)
+    _bar([(f"{p} (n={n})", wr) for p, wr, n in report.win_rate_by_product], "#E8730C", pct=True)
 
     c1, c2 = st.columns(2, gap="large")
     with c1:
