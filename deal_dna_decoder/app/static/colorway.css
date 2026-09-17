@@ -1,12 +1,16 @@
 /* RP Colorway tokens — presentation only. Never signal state by color alone. */
 :root {
   --navy: #082649;
+  --navy2: #0d3a6b;
   --ink: #0A1420;
   --amber: #AE6B29;
+  --amber-lt: #D9A440;
   --link: #2E6FB0;
   --success: #2E8B57;
   --warning: #E8A21A;
   --error: #D2402A;
+  --paper: #F5F6FB;
+  --line: #D0D8EF;
 }
 
 html, body, [class*="css"] {
@@ -14,16 +18,72 @@ html, body, [class*="css"] {
   color: var(--ink);
 }
 
+/* Hero banner */
+.rp-hero {
+  background: linear-gradient(120deg, var(--navy) 0%, var(--navy2) 100%);
+  color: #fff; padding: 20px 26px; border-radius: 12px; margin-bottom: 6px;
+  box-shadow: 0 2px 10px rgba(8,38,73,.18);
+}
+.rp-hero h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: .2px; }
+.rp-hero .sub { opacity: .85; font-size: 13px; margin-top: 4px; }
+.rp-hero .pill { display:inline-block; background: rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.28); border-radius: 999px; padding: 2px 10px;
+  font-size: 11px; margin-right: 6px; }
+
 .rp-title { color: var(--navy); font-weight: bold; }
 .rp-note { color: var(--amber); font-size: 12px; }
+.rp-section { color: var(--navy); font-weight: 700; font-size: 18px;
+  border-bottom: 2px solid var(--amber); padding-bottom: 4px; margin: 18px 0 8px; }
+
+/* Metric / KPI cards */
+.rp-kpis { display:flex; gap: 12px; flex-wrap: wrap; }
+.rp-kpi { background: #fff; border: 1px solid var(--line); border-top: 4px solid var(--navy);
+  border-radius: 10px; padding: 12px 16px; min-width: 120px; flex: 1; }
+.rp-kpi .v { font-size: 26px; font-weight: 800; color: var(--navy); line-height: 1; }
+.rp-kpi .l { font-size: 12px; color: #495E83; margin-top: 4px; }
+.rp-kpi.good { border-top-color: var(--success); }
+.rp-kpi.bad  { border-top-color: var(--error); }
+.rp-kpi.warn { border-top-color: var(--warning); }
+
+/* Generic card */
+.rp-card { background:#fff; border:1px solid var(--line); border-radius:10px;
+  padding: 12px 14px; margin-bottom: 10px; }
+
+/* Competitor battlecards */
+.rp-bc { background:#fff; border:1px solid var(--line); border-left: 6px solid var(--navy);
+  border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; }
+.rp-bc.hot { border-left-color: var(--error); }
+.rp-bc.mid { border-left-color: var(--warning); }
+.rp-bc.cool { border-left-color: var(--success); }
+.rp-bc h4 { margin: 0 0 4px; color: var(--navy); font-size: 16px; }
+.rp-bc .meta { font-size: 12px; color:#495E83; }
+.rp-bc blockquote { margin: 6px 0 0; padding-left: 10px; border-left: 3px solid var(--line);
+  color:#33455f; font-style: italic; font-size: 13px; }
 
 /* Status chips: color is always paired with a text label. */
-.rp-status { display: inline-block; padding: 2px 10px; border-radius: 12px;
+.rp-status { display: inline-block; padding: 3px 12px; border-radius: 12px;
   font-size: 12px; font-weight: bold; border: 2px solid var(--navy); }
 .rp-status.needs-review { color: var(--amber); border-color: var(--amber); }
 .rp-status.rep-reviewed { color: var(--link); border-color: var(--link); }
 .rp-status.manager-validated { color: var(--success); border-color: var(--success); }
 .rp-status.blocked { color: var(--error); border-color: var(--error); }
 
+/* Outcome badges */
+.rp-badge { display:inline-block; padding:2px 10px; border-radius:6px; font-size:12px;
+  font-weight:700; color:#fff; }
+.rp-badge.won { background: var(--success); }
+.rp-badge.lost { background: var(--error); }
+.rp-badge.stalled { background: var(--warning); }
+.rp-badge.review { background: #5B6470; }
+
+/* Review progress stepper */
+.rp-steps { display:flex; gap:8px; align-items:center; margin: 6px 0 2px; }
+.rp-step { font-size:12px; padding:4px 10px; border-radius:999px; border:1px solid var(--line);
+  color:#5B6470; background:#fff; }
+.rp-step.on { background: var(--navy); color:#fff; border-color: var(--navy); }
+.rp-arrow { color:#9aa7bf; }
+
 .rp-refuse { border-left: 5px solid var(--error); background: #fdf1ef;
+  padding: 10px 12px; border-radius: 6px; }
+.rp-ok { border-left: 5px solid var(--success); background: #eef7f1;
   padding: 10px 12px; border-radius: 6px; }
