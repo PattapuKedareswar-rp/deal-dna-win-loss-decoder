@@ -23,6 +23,10 @@ rep→manager review loop). Remaining: reviewer walkthrough + post final package
   `synthesize_cycle → enrich_crossfunctional → render_briefing` seam — hooks in `run.py` auto-wire it.
 - **19/19 tests pass** (11 core + 8 enrichment/render). Evaluation: **100% top-driver agreement (7/7) ·
   100% citation coverage · 0% competitor false-alarm.** `run --all` emits enriched JSON + genome HTML.
+- **Portfolio intelligence (`--portfolio`):** win-rate analytics (overall + by product), top win/loss
+  drivers, **competitor battlecards**, enablement coaching hotspots + a styled HTML dashboard.
+  Win rate 56% (9W/7L); Entrata loss rate 100% (pricing+risk). **22/22 tests pass.**
+- Streamlit review app verified live (Genome / Rep-Manager review / Cross-functional / Audit / Guardrail).
 
 ## In progress
 - Final reviewer walkthrough + submission package post to the team Teams channel.
