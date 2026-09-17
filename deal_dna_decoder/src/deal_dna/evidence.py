@@ -48,6 +48,8 @@ _SIGNALS: list[tuple[re.Pattern, Category, Direction, str, str]] = [
 ]
 
 _LOSS_CAUSAL = re.compile(r"we (chose|went with|selected)\b", re.I)
+# Risk language that is explicitly mitigated should not read as a negative signal.
+_MITIGATION = re.compile(r"de-?risk|reduced|addressed|mitigat|resolved|eased|reassured", re.I)
 
 
 def _extract_offline(turns: list[Turn]) -> tuple[list[Driver], list[CompetitorMention]]:
@@ -68,13 +70,17 @@ def _extract_offline(turns: list[Turn]) -> tuple[list[Driver], list[CompetitorMe
         if "buyer" not in role and "customer" not in role:
             continue
         for pat, cat, direction, conf, summary in _SIGNALS:
-            if pat.search(t.text):
-                drivers.append(Driver(
-                    category=cat, direction=direction, label=EvidenceLabel.OBSERVED,
-                    summary=summary, quote=t.text, speaker=f"{t.role} - {t.speaker}",
-                    speaker_role=t.speaker, timestamp=t.timestamp, source=t.source,
-                    confidence=conf,
-                ))
+            if not pat.search(t.text):
+                continue
+            # Risk that the seller explicitly mitigated is not a negative signal.
+            if cat == Category.RISK and direction == Direction.NEGATIVE and _MITIGATION.search(t.text):
+                continue
+            drivers.append(Driver(
+                category=cat, direction=direction, label=EvidenceLabel.OBSERVED,
+                summary=summary, quote=t.text, speaker=f"{t.role} - {t.speaker}",
+                speaker_role=t.speaker, timestamp=t.timestamp, source=t.source,
+                confidence=conf,
+            ))
     return _dedupe(drivers), mentions
 
 
@@ -90,11 +96,13 @@ def _dedupe(drivers: list[Driver]) -> list[Driver]:
 
 
 _LLM_SYSTEM = (
-    "You are Deal DNA's evidence coder. Extract only findings supported by an attributed buyer "
-    "statement. Every finding must include a verbatim quote, speaker, timestamp, and source. "
-    "Separate observation from interpretation. A competitor mention is NOT a loss reason. If a "
-    "statement is not clearly supported, do not emit a driver. Return JSON with a 'drivers' list "
-    "and a 'competitor_mentions' list matching the provided schema."
+    "You are Deal DNA's evidence coder. Extract ONLY findings supported by an attributed BUYER "
+    "statement. Every driver MUST copy a VERBATIM buyer quote (never paraphrase, never invent) plus "
+    "the speaker, timestamp, and source exactly as given. Separate observation from interpretation: "
+    "use label 'Observed' only for direct buyer statements. A competitor mention is NOT a loss reason "
+    "unless the buyer explicitly says they chose/selected the competitor. When a statement is not "
+    "clearly supported, DO NOT emit a driver (abstain). Do not turn missing evidence into a negative "
+    "finding. Return JSON with a 'drivers' list and a 'competitor_mentions' list matching the schema."
 )
 
 

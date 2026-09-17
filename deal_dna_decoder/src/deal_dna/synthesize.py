@@ -6,6 +6,8 @@ mentions, and records honest unknowns.
 """
 from __future__ import annotations
 
+from collections import Counter
+
 from . import salesforce
 from .evidence import extract_call
 from .intake import gate
@@ -24,11 +26,23 @@ def _collect(cycle) -> tuple[list[Driver], list[CompetitorMention]]:
     return drivers, mentions
 
 
+def _calibrate_confidence(drivers: list[Driver]) -> None:
+    """A category seen only once in the cycle is weaker evidence: medium -> low."""
+    counts = Counter(d.category for d in drivers)
+    for d in drivers:
+        if counts[d.category] == 1 and d.confidence == "medium":
+            d.confidence = "low"
+
+
 def _unknowns(drivers: list[Driver], outcome: Outcome) -> list[str]:
     cats = {d.category for d in drivers}
     unknowns: list[str] = []
     if Category.AUTHORITY not in cats:
         unknowns.append("Decision authority not observed.")
+    if outcome == Outcome.WON and Category.ROI not in cats:
+        unknowns.append("ROI / value evidence not observed on a Won deal.")
+    if outcome == Outcome.LOST and Category.PRICING not in cats:
+        unknowns.append("Pricing sentiment not observed on a Lost deal.")
     if outcome == Outcome.LOST and not (
         {Category.PRICING, Category.PRODUCT, Category.INTEGRATION, Category.DEMO} & cats
     ):
@@ -47,6 +61,7 @@ def synthesize_cycle(cycle_id: str) -> DealDNA:
     product = intake.product or (row or {}).get("product_family", "")
 
     drivers, mentions = _collect(cycle)
+    _calibrate_confidence(drivers)
 
     review = Review(status="Needs Review")
     if not intake.ok:

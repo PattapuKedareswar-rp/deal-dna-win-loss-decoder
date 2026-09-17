@@ -44,6 +44,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--cycle", help="Analyze a single cycle id (e.g. cyc-001)")
     ap.add_argument("--all", action="store_true", help="Analyze all cycles")
     ap.add_argument("--radar", action="store_true", help="Print the market-signal radar")
+    ap.add_argument("--evaluate", action="store_true", help="Score decoded drivers against the gold set")
     ap.add_argument("--write-fixture", action="store_true",
                     help="Write data/fixtures/sample_dealdna.json for Person B")
     ap.add_argument("--check", metavar="INSTRUCTION", help="Screen an instruction against the guardrail")
@@ -63,6 +64,11 @@ def main(argv: list[str] | None = None) -> int:
     if not cycles:
         print("No cycles found. Run:  python data/generate_data.py")
         return 1
+
+    if args.evaluate:
+        from .evaluate import evaluate, format_report
+        print(format_report(evaluate()))
+        return 0
 
     deals: list[DealDNA] = []
     if args.all or (not args.cycle and not args.radar and not args.write_fixture):
