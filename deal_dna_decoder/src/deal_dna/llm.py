@@ -27,7 +27,7 @@ def structured_json(system: str, user: str, model_cls: Type[T]) -> T:
 
     from openai import OpenAI  # imported lazily so offline mode needs no SDK install
 
-    client = OpenAI(api_key=config.OPENAI_API_KEY)
+    client = OpenAI(api_key=config.OPENAI_API_KEY, base_url=config.OPENAI_BASE_URL)
     schema_hint = json.dumps(model_cls.model_json_schema())
     resp = client.chat.completions.create(
         model=config.OPENAI_MODEL,

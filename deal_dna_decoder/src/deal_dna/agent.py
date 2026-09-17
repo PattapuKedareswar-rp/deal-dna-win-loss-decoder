@@ -160,7 +160,7 @@ def ask(question: str) -> AgentResult:
 def _agentic(question: str) -> AgentResult:
     from openai import OpenAI
 
-    client = OpenAI(api_key=config.OPENAI_API_KEY)
+    client = OpenAI(api_key=config.OPENAI_API_KEY, base_url=config.OPENAI_BASE_URL)
     messages = [{"role": "system", "content": _SYSTEM}, {"role": "user", "content": question}]
     calls: list[ToolCall] = []
     for _ in range(6):

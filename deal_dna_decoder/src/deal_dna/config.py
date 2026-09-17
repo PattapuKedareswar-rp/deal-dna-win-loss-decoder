@@ -22,6 +22,8 @@ OUTPUTS_DIR = PROJECT_DIR / "outputs"
 # Model / mode
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o")
+# Some keys are region-locked (e.g. us.api.openai.com). Set OPENAI_BASE_URL to override the endpoint.
+OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL") or None
 FORCE_OFFLINE = os.getenv("DEAL_DNA_OFFLINE", "0") == "1"
 
 DATA_NOTE = "SYNTHETIC sample data — not real customer data."
