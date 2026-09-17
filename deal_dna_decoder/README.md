@@ -32,9 +32,12 @@ python data/generate_data.py           # create synthetic transcripts + Salesfor
 $env:DEAL_DNA_OFFLINE = 1
 python -m deal_dna.run --all            # analyze every cycle -> outputs/*.json
 python -m deal_dna.run --radar          # market-signal radar
+python -m deal_dna.run --evaluate       # score decoded drivers vs the human gold set
+python -m deal_dna.run --portfolio      # executive intelligence + outputs/portfolio.html
+python -m deal_dna.run --demo           # narrated Won/Lost/Stalled walkthrough
 python -m deal_dna.run --check "email the customer a discount"   # guardrail demo
 python -m deal_dna.run --write-fixture  # emit data/fixtures/sample_dealdna.json for Person B
-python -m pytest -q                     # 7 tests, offline
+python -m pytest -q                     # offline test suite
 ```
 
 To use OpenAI instead of the offline path, copy `.env.example` to `.env`, set `OPENAI_API_KEY`

@@ -1,12 +1,16 @@
+README.md
 pyproject.toml
 src/deal_dna/__init__.py
 src/deal_dna/audit.py
 src/deal_dna/config.py
+src/deal_dna/crossfunction.py
+src/deal_dna/evaluate.py
 src/deal_dna/evidence.py
 src/deal_dna/intake.py
 src/deal_dna/llm.py
 src/deal_dna/normalize.py
 src/deal_dna/radar.py
+src/deal_dna/render.py
 src/deal_dna/run.py
 src/deal_dna/salesforce.py
 src/deal_dna/schema.py
@@ -17,3 +21,6 @@ src/deal_dna_decoder.egg-info/dependency_links.txt
 src/deal_dna_decoder.egg-info/requires.txt
 src/deal_dna_decoder.egg-info/top_level.txt
 tests/test_core.py
+tests/test_crossfunction.py
+tests/test_evaluate.py
+tests/test_render.py

@@ -104,6 +104,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--evaluate", action="store_true", help="Score decoded drivers against the gold set")
     ap.add_argument("--demo", action="store_true",
                     help="Narrated MVP walkthrough: one Won, one Lost, one Stalled cycle")
+    ap.add_argument("--portfolio", action="store_true",
+                    help="Executive portfolio intelligence across all cycles (+ HTML dashboard)")
     ap.add_argument("--write-fixture", action="store_true",
                     help="Write data/fixtures/sample_dealdna.json for Person B")
     ap.add_argument("--check", metavar="INSTRUCTION", help="Screen an instruction against the guardrail")
@@ -131,6 +133,17 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.demo:
         _demo(outdir)
+        return 0
+
+    if args.portfolio:
+        from .portfolio import build_portfolio, format_portfolio, render_portfolio_html
+        deals = [synthesize_cycle(c) for c in cycles]
+        report = build_portfolio(deals)
+        print(format_portfolio(report))
+        outdir.mkdir(parents=True, exist_ok=True)
+        html_path = outdir / "portfolio.html"
+        html_path.write_text(render_portfolio_html(report), encoding="utf-8")
+        print(f"\nDashboard written: {html_path}")
         return 0
 
     deals: list[DealDNA] = []
