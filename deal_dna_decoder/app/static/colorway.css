@@ -1,0 +1,29 @@
+/* RP Colorway tokens — presentation only. Never signal state by color alone. */
+:root {
+  --navy: #082649;
+  --ink: #0A1420;
+  --amber: #AE6B29;
+  --link: #2E6FB0;
+  --success: #2E8B57;
+  --warning: #E8A21A;
+  --error: #D2402A;
+}
+
+html, body, [class*="css"] {
+  font-family: Calibri, "Segoe UI", sans-serif;
+  color: var(--ink);
+}
+
+.rp-title { color: var(--navy); font-weight: bold; }
+.rp-note { color: var(--amber); font-size: 12px; }
+
+/* Status chips: color is always paired with a text label. */
+.rp-status { display: inline-block; padding: 2px 10px; border-radius: 12px;
+  font-size: 12px; font-weight: bold; border: 2px solid var(--navy); }
+.rp-status.needs-review { color: var(--amber); border-color: var(--amber); }
+.rp-status.rep-reviewed { color: var(--link); border-color: var(--link); }
+.rp-status.manager-validated { color: var(--success); border-color: var(--success); }
+.rp-status.blocked { color: var(--error); border-color: var(--error); }
+
+.rp-refuse { border-left: 5px solid var(--error); background: #fdf1ef;
+  padding: 10px 12px; border-radius: 6px; }
