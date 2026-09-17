@@ -4,3 +4,5 @@ cyc-002,Won,roi,Consolidation + ROI + strong references
 cyc-003,Stalled / No Decision,timing,Budget froze after acquisition
 cyc-004,Lost,integration,Open-API gap; incumbent bundling
 cyc-006,Lost,demo,Demo friction; missing automated renewals
+cyc-013,Won,roi,Multi-call: ROI + references + de-risked implementation
+cyc-017,Lost,demo,Demo friction lost the room; renewals gap

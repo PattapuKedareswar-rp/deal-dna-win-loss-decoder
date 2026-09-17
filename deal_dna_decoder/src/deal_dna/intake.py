@@ -44,6 +44,8 @@ def gate(cycle: Cycle) -> IntakeResult:
                                      TranscriptStatus.NONE) for c in cycle.calls]
     order = list(TranscriptStatus)  # FULL is strongest, NONE weakest
     weakest = max(statuses, key=lambda s: order.index(s))
+    if weakest not in (TranscriptStatus.FULL, TranscriptStatus.EXCERPTS):
+        issues.append(f"Transcript completeness insufficient: {weakest.value}.")
 
     # Speaker attribution.
     if any(not t.speaker for c in cycle.calls for t in c.turns):

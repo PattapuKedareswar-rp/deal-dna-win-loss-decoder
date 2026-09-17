@@ -59,3 +59,11 @@ def test_radar_only_surfaces_recurring_signals():
         assert s.count >= 2
     for s in report.alternative_software:
         assert s.count >= 2
+
+
+def test_intake_gate_surfaces_consent_and_completeness_issues():
+    d15 = synthesize_cycle("cyc-015")  # consent pending
+    assert any("consent" in u.lower() for u in d15.unknowns)
+    d16 = synthesize_cycle("cyc-016")  # speaker attribution incomplete
+    assert d16.transcript_status.value == "Speaker attribution incomplete"
+    assert any("completeness" in u.lower() for u in d16.unknowns)

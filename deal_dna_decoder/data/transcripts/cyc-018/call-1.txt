@@ -1,0 +1,3 @@
+[00:00:10] Rep - E. Novak: What was the driver?
+[00:01:03] Buyer - COO: Consolidating four point tools onto one platform removed manual work.
+[00:02:18] Buyer - COO: The implementation and support plan reduced our risk concerns.

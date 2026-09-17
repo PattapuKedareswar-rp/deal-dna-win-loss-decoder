@@ -1,0 +1,12 @@
+{
+  "cycle_id": "cyc-017",
+  "call_id": "call-1",
+  "opportunity_id": "006A017",
+  "account": "Sagebrush Living",
+  "call_date": "2026-08-30",
+  "source_system": "SharePoint (synthetic)",
+  "product": "Property Management Platform",
+  "stage": "Closed Lost",
+  "consent": "approved",
+  "transcript_status": "Full transcript available"
+}

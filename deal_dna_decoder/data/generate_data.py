@@ -197,6 +197,88 @@ CYCLES: list[dict] = [
             ],
         ],
     },
+    {
+        "cycle_id": "cyc-013", "opp": "006A013", "account": "Copperfield Communities",
+        "product": "AI Revenue Management", "competitor": "ResMan", "owner": "F. Okafor",
+        "outcome": "Won", "stage": "Closed Won", "close_date": "2026-06-02",
+        "calls": [
+            [
+                line(9, "Rep", "F. Okafor", "What's the goal for this evaluation?"),
+                line(58, "Buyer", "Revenue Manager", "We want to consolidate our point tools and cut the manual renewal work."),
+                line(130, "Buyer", "Revenue Manager", "The demo really showed how the automation removes those manual steps."),
+            ],
+            [
+                line(12, "Rep", "F. Okafor", "Your CFO is here today — shall we talk value?"),
+                line(70, "Buyer", "CFO", "The ROI and revenue lift were compelling and the payback is under a year."),
+                line(150, "Buyer", "CFO", "Your peer references in our region built real trust with the board."),
+            ],
+            [
+                line(10, "Rep", "F. Okafor", "Any last concerns before we move forward?"),
+                line(66, "Buyer", "Ops Director", "The implementation plan de-risked the migration for our team."),
+                line(120, "Buyer", "Ops Director", "That reassured us on the onboarding risk."),
+            ],
+        ],
+    },
+    {
+        "cycle_id": "cyc-014", "opp": "006A014", "account": "Stonebrook Rentals",
+        "product": "Resident Screening", "competitor": "Yardi", "owner": "A. Morgan",
+        "outcome": "Won", "stage": "Closed Won", "close_date": "2026-05-20",
+        "calls": [
+            [
+                line(10, "Rep", "A. Morgan", "How did you land on a direction?"),
+                line(62, "Buyer", "Leasing Director", "We had also been evaluating Yardi, but your revenue lift and ROI stood out."),
+                line(135, "Buyer", "Leasing Director", "Strong peer references sealed the trust for us."),
+            ],
+        ],
+    },
+    {
+        "cycle_id": "cyc-015", "opp": "006A015", "account": "Ironwood Property Group",
+        "product": "Payments & Billing", "competitor": "Entrata", "owner": "C. Diaz",
+        "outcome": "Lost", "stage": "Closed Lost", "close_date": "2026-08-28",
+        "consent": "pending",  # exercises the intake gate -> Needs Review
+        "calls": [
+            [
+                line(9, "Rep", "C. Diaz", "What drove the decision?"),
+                line(60, "Buyer", "Controller", "Your price was too high once implementation fees were added."),
+            ],
+        ],
+    },
+    {
+        "cycle_id": "cyc-016", "opp": "006A016", "account": "Brightwater Homes",
+        "product": "Leasing & Marketing", "competitor": "None", "owner": "B. Chen",
+        "outcome": "Won", "stage": "Closed Won", "close_date": "2026-05-05",
+        "transcript_status": "Speaker attribution incomplete",  # exercises the intake gate
+        "calls": [
+            [
+                line(11, "Rep", "B. Chen", "What convinced the team?"),
+                line(64, "Buyer", "Marketing Lead", "The product fit and consolidation were the deciding factors."),
+            ],
+        ],
+    },
+    {
+        "cycle_id": "cyc-017", "opp": "006A017", "account": "Sagebrush Living",
+        "product": "Property Management Platform", "competitor": "Entrata", "owner": "D. Patel",
+        "outcome": "Lost", "stage": "Closed Lost", "close_date": "2026-08-30",
+        "calls": [
+            [
+                line(8, "Rep", "D. Patel", "How did the demo go with the wider team?"),
+                line(55, "Buyer", "Ops Manager", "The demo felt clunky when you switched screens and lost the room."),
+                line(120, "Buyer", "Ops Manager", "Automated renewals weren't obvious — it looked like a missing feature."),
+            ],
+        ],
+    },
+    {
+        "cycle_id": "cyc-018", "opp": "006A018", "account": "Half Moon Residences",
+        "product": "Property Management Platform", "competitor": "None", "owner": "E. Novak",
+        "outcome": "Won", "stage": "Closed Won", "close_date": "2026-04-22",
+        "calls": [
+            [
+                line(10, "Rep", "E. Novak", "What was the driver?"),
+                line(63, "Buyer", "COO", "Consolidating four point tools onto one platform removed manual work."),
+                line(138, "Buyer", "COO", "The implementation and support plan reduced our risk concerns."),
+            ],
+        ],
+    },
 ]
 
 
@@ -215,14 +297,16 @@ def write_transcripts_and_manifest() -> list[dict]:
                 "call_date": c["close_date"] or "2026-08-01",
                 "source_system": "SharePoint (synthetic)",
                 "product": c["product"], "stage": c["stage"],
-                "consent": "approved", "transcript_status": "Full transcript available",
+                "consent": c.get("consent", "approved"),
+                "transcript_status": c.get("transcript_status", "Full transcript available"),
             }
             (cdir / f"{call_id}.metadata.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
             manifest_rows.append({
                 "cycle_id": c["cycle_id"], "call_id": call_id,
                 "source": str(txt.relative_to(DATA.parent)),
-                "outcome": c["outcome"], "completeness": "Full transcript available",
-                "consent": "approved",
+                "outcome": c["outcome"],
+                "completeness": c.get("transcript_status", "Full transcript available"),
+                "consent": c.get("consent", "approved"),
             })
     return manifest_rows
 
@@ -268,6 +352,8 @@ def write_gold() -> None:
         ("cyc-003", "Stalled / No Decision", "timing", "Budget froze after acquisition"),
         ("cyc-004", "Lost", "integration", "Open-API gap; incumbent bundling"),
         ("cyc-006", "Lost", "demo", "Demo friction; missing automated renewals"),
+        ("cyc-013", "Won", "roi", "Multi-call: ROI + references + de-risked implementation"),
+        ("cyc-017", "Lost", "demo", "Demo friction lost the room; renewals gap"),
     ]
     with (GOLD / "human-reviewed-labels.csv").open("w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)

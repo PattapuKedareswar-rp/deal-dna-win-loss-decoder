@@ -11,3 +11,9 @@ opportunity_id,account,product_family,stage,IsWon,outcome,owner,close_date,sale_
 006A010,Oakhaven Communities,AI Revenue Management,Closed Won,true,Won,D. Patel,2026-06-15,New
 006A011,Prairie Winds Housing,Resident Screening,Closed Lost,false,Lost,C. Diaz,2026-08-25,New
 006A012,Fair Meadow Realty,Property Management Platform,Closed Won,true,Won,E. Novak,2026-07-05,New
+006A013,Copperfield Communities,AI Revenue Management,Closed Won,true,Won,F. Okafor,2026-06-02,New
+006A014,Stonebrook Rentals,Resident Screening,Closed Won,true,Won,A. Morgan,2026-05-20,New
+006A015,Ironwood Property Group,Payments & Billing,Closed Lost,false,Lost,C. Diaz,2026-08-28,New
+006A016,Brightwater Homes,Leasing & Marketing,Closed Won,true,Won,B. Chen,2026-05-05,New
+006A017,Sagebrush Living,Property Management Platform,Closed Lost,false,Lost,D. Patel,2026-08-30,New
+006A018,Half Moon Residences,Property Management Platform,Closed Won,true,Won,E. Novak,2026-04-22,New

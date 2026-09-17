@@ -1,0 +1,12 @@
+{
+  "cycle_id": "cyc-018",
+  "call_id": "call-1",
+  "opportunity_id": "006A018",
+  "account": "Half Moon Residences",
+  "call_date": "2026-04-22",
+  "source_system": "SharePoint (synthetic)",
+  "product": "Property Management Platform",
+  "stage": "Closed Won",
+  "consent": "approved",
+  "transcript_status": "Full transcript available"
+}
