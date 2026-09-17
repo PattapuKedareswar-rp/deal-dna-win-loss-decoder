@@ -27,6 +27,8 @@ def test_vtt_parsing_preserves_speaker_and_timestamp():
     assert turns[1].role == "Rep" and turns[1].speaker == "A. Morgan"
 
 
-def test_data_mode_defaults_to_synthetic_demo():
-    # No approved export present in the test workspace.
-    assert data_mode() == "synthetic-demo"
+def test_data_mode_defaults_to_synthetic_demo(monkeypatch, tmp_path):
+    # Isolate from any real approved export a developer may have dropped in locally.
+    import deal_dna.sources as s
+    monkeypatch.setattr(s, "APPROVED_TRANSCRIPTS", tmp_path / "empty")
+    assert s.data_mode() == "synthetic-demo"
