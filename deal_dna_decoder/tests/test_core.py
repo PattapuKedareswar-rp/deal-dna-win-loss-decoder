@@ -52,6 +52,16 @@ def test_audit_blocks_untraceable_driver():
     assert audit_dealdna(dna).verdict == BLOCKED
 
 
+def test_dealdna_json_roundtrip_for_persistence():
+    # The review app persists an enriched DealDNA to disk and reloads it on open.
+    from deal_dna.crossfunction import enrich_crossfunctional
+    d = enrich_crossfunctional(synthesize_cycle("cyc-002"))
+    d2 = DealDNA.model_validate_json(d.model_dump_json())
+    assert d2.cycle_id == d.cycle_id
+    assert len(d2.drivers) == len(d.drivers)
+    assert d2.review.status == d.review.status
+
+
 def test_radar_only_surfaces_recurring_signals():
     deals = [synthesize_cycle(c) for c in list_cycles()]
     report = build_radar(deals)

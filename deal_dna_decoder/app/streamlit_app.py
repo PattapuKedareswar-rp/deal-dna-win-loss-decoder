@@ -64,7 +64,18 @@ def _portfolio():
     return build_portfolio(deals), build_radar(deals)
 
 
+def _reviewed_path(cycle_id: str) -> Path:
+    return config.OUTPUTS_DIR / "reviewed" / f"{cycle_id}.json"
+
+
 def _load(cycle_id: str) -> DealDNA:
+    # Reload a persisted review if present (survives refresh); else build fresh.
+    p = _reviewed_path(cycle_id)
+    if p.exists():
+        try:
+            return DealDNA.model_validate_json(p.read_text(encoding="utf-8"))
+        except Exception:
+            pass
     return enrich_crossfunctional(synthesize_cycle(cycle_id))
 
 
@@ -76,7 +87,7 @@ def _get_dna(cycle_id: str) -> DealDNA:
 
 
 def _save_reviewed(d: DealDNA) -> Path:
-    out = config.OUTPUTS_DIR / "reviewed" / f"{d.cycle_id}.json"
+    out = _reviewed_path(d.cycle_id)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(d.model_dump(mode="json"), indent=2, default=str), encoding="utf-8")
     return out
@@ -240,10 +251,14 @@ def page_review() -> None:
 
     labels = {f'{r["cycle_id"]} · {r["account"]} · {r["outcome"]}': r["cycle_id"] for r in filtered}
     with st.sidebar:
-        rep_name = st.text_input("Rep name", value="Rep")
-        manager_name = st.text_input("Manager name", value="Manager")
+        role = st.radio("Your role", ["Rep", "Manager"], horizontal=True)
+        actor_name = st.text_input(f"{role} name", value=role)
         if st.button("Reset this deal"):
-            st.session_state.get("dna", {}).pop(st.session_state.get("cur_cycle"), None)
+            cid = st.session_state.get("cur_cycle")
+            st.session_state.get("dna", {}).pop(cid, None)
+            p = _reviewed_path(cid) if cid else None
+            if p and p.exists():
+                p.unlink()
             st.rerun()
 
     choice = st.selectbox(f"Deal ({len(filtered)} match)", list(labels.keys()))
@@ -268,7 +283,7 @@ def page_review() -> None:
     with tabs[0]:
         st.components.v1.html(render_briefing(d), height=900, scrolling=True)
     with tabs[1]:
-        _tab_review(d, cycle_id, rep_name, manager_name)
+        _tab_review(d, cycle_id, role, actor_name)
     with tabs[2]:
         _render_feeds(d)
     with tabs[3]:
@@ -288,10 +303,13 @@ def _review_stepper(status: str) -> None:
     st.markdown('<div class="rp-steps">' + "".join(parts) + "</div>", unsafe_allow_html=True)
 
 
-def _tab_review(d: DealDNA, cycle_id: str, rep_name: str, manager_name: str) -> None:
+def _tab_review(d: DealDNA, cycle_id: str, role: str, actor_name: str) -> None:
+    is_rep = role == "Rep"
+    is_mgr = role == "Manager"
     done = sum(1 for c in d.review.corrections if c.actor == "rep")
     st.progress(min(done / max(len(d.drivers), 1), 1.0),
                 text=f"Rep decisions recorded: {done}/{len(d.drivers)}")
+    st.caption(f"Acting as **{role}**. Review state is saved to disk and survives refresh.")
     st.markdown("#### Rep review — one decision per driver")
     if not d.drivers:
         st.info("No drivers to review.")
@@ -300,36 +318,43 @@ def _tab_review(d: DealDNA, cycle_id: str, rep_name: str, manager_name: str) -> 
             st.markdown(f"**{drv.category.value} · {drv.direction.value} · {drv.confidence}** — {drv.summary}")
             st.caption(f'“{drv.quote}” — {drv.speaker} · {drv.timestamp} · {drv.source}')
             note = st.text_input("Context / challenge note", key=f"note-{cycle_id}-{i}",
-                                 placeholder="Required for Add context / Challenge")
+                                 placeholder="Required for Add context / Challenge", disabled=not is_rep)
             cols = st.columns(3)
-            if cols[0].button("✔ Confirm", key=f"confirm-{cycle_id}-{i}", use_container_width=True):
-                _record(d, rep_name, "confirmed", drv.category.value, "")
+            if cols[0].button("✔ Confirm", key=f"confirm-{cycle_id}-{i}",
+                              use_container_width=True, disabled=not is_rep):
+                _record(d, actor_name, "confirmed", drv.category.value, "")
                 st.rerun()
-            if cols[1].button("＋ Add context", key=f"context-{cycle_id}-{i}", use_container_width=True):
+            if cols[1].button("＋ Add context", key=f"context-{cycle_id}-{i}",
+                              use_container_width=True, disabled=not is_rep):
                 if note.strip():
-                    _record(d, rep_name, "added_context", drv.category.value, note.strip())
+                    _record(d, actor_name, "added_context", drv.category.value, note.strip())
                     st.rerun()
                 else:
                     st.warning("Add a note before submitting context.")
-            if cols[2].button("✎ Challenge", key=f"challenge-{cycle_id}-{i}", use_container_width=True):
+            if cols[2].button("✎ Challenge", key=f"challenge-{cycle_id}-{i}",
+                              use_container_width=True, disabled=not is_rep):
                 if note.strip():
-                    _record(d, rep_name, "challenged", drv.category.value, note.strip())
+                    _record(d, actor_name, "challenged", drv.category.value, note.strip())
                     st.rerun()
                 else:
                     st.warning("Add a note explaining the challenge.")
 
     st.divider()
     st.markdown("#### Manager validation")
-    can_validate = d.review.status == "Rep Reviewed"
-    if not can_validate and d.review.status != "Manager Validated":
-        st.info("Manager can validate once the rep has reviewed at least one driver.")
+    can_validate = d.review.status == "Rep Reviewed" and is_mgr
+    if d.review.status != "Manager Validated":
+        if not is_mgr:
+            st.info("Switch to the **Manager** role (sidebar) to validate.")
+        elif d.review.status != "Rep Reviewed":
+            st.info("Manager can validate once the rep has reviewed at least one driver.")
     if st.button("✅ Validate deal", disabled=not can_validate, type="primary"):
         d.review.corrections.append(ReviewCorrection(actor="manager", action="validated",
                                                      field="review", note=""))
         d.review.status = "Manager Validated"
-        d.review.manager = manager_name
+        d.review.manager = actor_name
         d.review.reviewed_at = _now()
-        st.success(f"Validated by {manager_name}. Saved to {_save_reviewed(d)}")
+        _save_reviewed(d)
+        st.success(f"Validated by {actor_name}. Saved (persists across refresh).")
     if st.button("💾 Save review snapshot"):
         st.success(f"Saved to {_save_reviewed(d)}")
 
@@ -370,6 +395,7 @@ def _record(d: DealDNA, rep: str, action: str, field: str, note: str) -> None:
     d.review.rep = rep
     if d.review.status == "Needs Review":
         d.review.status = "Rep Reviewed"
+    _save_reviewed(d)  # persist immediately so it survives refresh
 
 
 def _render_feeds(d: DealDNA) -> None:
