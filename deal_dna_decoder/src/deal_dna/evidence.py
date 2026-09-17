@@ -55,6 +55,9 @@ _MITIGATION = re.compile(r"de-?risk|reduced|addressed|mitigat|resolved|eased|rea
 def _extract_offline(turns: list[Turn]) -> tuple[list[Driver], list[CompetitorMention]]:
     drivers: list[Driver] = []
     mentions: list[CompetitorMention] = []
+    # Synthetic data labels roles (Buyer/Rep); real transcripts don't. When no buyer role
+    # exists, analyze all speakers so extraction still works on real evidence.
+    has_roles = any(("buyer" in t.role.lower() or "customer" in t.role.lower()) for t in turns)
     for t in turns:
         role = t.role.lower()
         # Competitor mentions (from anyone) — captured, not judged.
@@ -66,8 +69,8 @@ def _extract_offline(turns: list[Turn]) -> tuple[list[Driver], list[CompetitorMe
                     is_loss_reason=bool(_LOSS_CAUSAL.search(t.text)),
                     note="" if _LOSS_CAUSAL.search(t.text) else "Mention only; not established as a loss reason.",
                 ))
-        # Drivers are anchored on buyer statements (what the customer said).
-        if "buyer" not in role and "customer" not in role:
+        # Drivers anchor on buyer statements when roles are known; else on any speaker.
+        if has_roles and "buyer" not in role and "customer" not in role:
             continue
         for pat, cat, direction, conf, summary in _SIGNALS:
             if not pat.search(t.text):

@@ -98,6 +98,45 @@ def _parse_vtt(text: str, source: str) -> list[Turn]:
     return turns
 
 
+# --- Clari/Gong-style blocks: ">>Speaker  MM:SS" then paragraph text until the next speaker ---
+_SPK_RE = re.compile(r"^>>\s*(.+?)\s+(\d{1,2}:\d{2}(?::\d{2})?)\b\s*(.*)$")
+
+
+def _norm_ts(ts: str) -> str:
+    parts = [int(x) for x in ts.split(":")]
+    h, m, s = ([0] + parts)[-3:] if len(parts) == 2 else parts
+    return f"{h:02d}:{m:02d}:{s:02d}"
+
+
+def _looks_like_blocks(text: str) -> bool:
+    return any(_SPK_RE.match(ln.strip()) for ln in text.splitlines()[:120])
+
+
+def _parse_speaker_blocks(text: str, source: str) -> list[Turn]:
+    turns: list[Turn] = []
+    speaker: str | None = None
+    ts = "00:00:00"
+    buf: list[str] = []
+
+    def flush() -> None:
+        if speaker is not None:
+            txt = " ".join(x.strip() for x in buf if x.strip()).strip()
+            if txt:
+                turns.append(Turn(timestamp=ts, role="Speaker", speaker=speaker,
+                                  text=txt, source=source))
+
+    for line in text.splitlines():
+        m = _SPK_RE.match(line.strip())
+        if m:
+            flush()
+            speaker, ts = m.group(1).strip(), _norm_ts(m.group(2))
+            buf = [m.group(3)] if m.group(3).strip() else []
+        else:
+            buf.append(line)
+    flush()
+    return turns
+
+
 def load_call(path: Path) -> Call:
     meta_path = path.parent / (path.stem + ".metadata.json")
     metadata = json.loads(meta_path.read_text(encoding="utf-8-sig")) if meta_path.exists() else {}
@@ -105,6 +144,8 @@ def load_call(path: Path) -> Call:
     text = path.read_text(encoding="utf-8-sig")
     if path.suffix.lower() == ".vtt":
         turns = _parse_vtt(text, source)
+    elif _looks_like_blocks(text):
+        turns = _parse_speaker_blocks(text, source)
     else:
         turns = [t for raw in text.splitlines() if raw.strip()
                  and (t := parse_line(raw, source)) is not None]
