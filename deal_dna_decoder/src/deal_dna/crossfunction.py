@@ -44,29 +44,54 @@ def _ref(d: Driver) -> str:
     return f'{d.timestamp} {d.source} — "{d.quote}"'
 
 
+def _short(text: str, n: int = 90) -> str:
+    text = text.strip()
+    return text if len(text) <= n else text[: n - 1] + "…"
+
+
+def _dedupe(items: list[str]) -> list[str]:
+    seen: set[str] = set()
+    out: list[str] = []
+    for x in items:
+        k = x.strip().lower()
+        if k and k not in seen:
+            seen.add(k)
+            out.append(x)
+    return out
+
+
 def _insight(audience: str, drivers: list[Driver]) -> str:
+    if not drivers:
+        return f"Alternative-software mentions relevant to {audience.replace('_', ' ')}."
+    top = drivers[0]
     cats = sorted({d.category.value for d in drivers})
     neg = sum(1 for d in drivers if d.direction == Direction.NEGATIVE)
     pos = sum(1 for d in drivers if d.direction == Direction.POSITIVE)
-    tone = "hesitations" if neg > pos else "strengths" if pos > neg else "signals"
-    return f"{len(drivers)} {tone} for {audience.replace('_', ' ')} across: {', '.join(cats)}."
+    tone = "hesitation" if neg > pos else "strength" if pos > neg else "signal"
+    return (f"{len(drivers)} {tone}(s) across {', '.join(cats)}. "
+            f"Lead example: “{_short(top.quote)}” ({top.category.value}).")
 
 
-def _recommended_action(audience: str, drivers: list[Driver]) -> str:
+def _recommended_action(audience: str, drivers: list[Driver],
+                        competitors: list[str] | None = None) -> str:
+    q = _short(drivers[0].quote) if drivers else ""
     if audience == "pricing":
-        return ("Review packaging / TCO framing with Deal Desk. This is a review item, "
-                "not an approved price change.")
+        return (f"Deal Desk: review packaging / TCO against the buyer's words — “{q}”. "
+                f"Review item, NOT an approved price change.")
+    if audience == "product_marketing":
+        comp = ", ".join(sorted(set(competitors or []))) or "no named alternative"
+        return f"Sharpen messaging / proof against “{q}”; competitive context: {comp}."
     verbs = {
-        "enablement": "Coach reps on the observed skill/stage gaps; build a play from these quotes.",
-        "product": "Log capability/roadmap gaps for triage; validate against the cited buyer statements.",
-        "product_marketing": "Sharpen messaging against the cited hesitations and alternatives.",
-        "implementations": "Set post-sale expectations from the cited risks before kickoff.",
+        "enablement": f"Coach reps on this moment — “{q}”; build a play from the cited quotes.",
+        "product": f"Log the capability / roadmap gap evidenced by “{q}” for triage.",
+        "implementations": f"Set post-sale expectations from “{q}” before kickoff.",
     }
     return verbs.get(audience, "Route to the owning team for review.")
 
 
 def _build_feeds(d: DealDNA) -> CrossFunctionActions:
     feeds = CrossFunctionActions()
+    comp_names = [m.name for m in d.competitor_mentions]
     for audience, (cats, owner) in _FEED_MAP.items():
         supporting = [drv for drv in d.drivers if drv.category in cats]
         refs = [_ref(drv) for drv in supporting]
@@ -78,10 +103,9 @@ def _build_feeds(d: DealDNA) -> CrossFunctionActions:
             continue  # no action without evidence
         action = CrossFunctionAction(
             audience=audience,
-            insight=_insight(audience, supporting) if supporting
-            else f"Alternative software mentioned for {audience.replace('_', ' ')}.",
+            insight=_insight(audience, supporting),
             evidence_refs=refs,
-            recommended_action=_recommended_action(audience, supporting),
+            recommended_action=_recommended_action(audience, supporting, comp_names),
             owner_suggestion=owner,
             recurrence="single cycle",
             review_status=EvidenceLabel.NEEDS_REVIEW,
@@ -98,32 +122,30 @@ def _build_coaching(d: DealDNA) -> SellerCoaching:
     situation = (f"{d.account}: {d.outcome.value} ({d.outcome_source}). "
                  f"{len(d.drivers)} evidence-backed drivers across {d.call_count} call(s).")
 
-    stress_next = [f"Reinforce: {drv.summary}" for drv in pos[:3]] or \
+    stress_next = _dedupe([f"Reinforce: {drv.summary}" for drv in pos])[:3] or \
         ["No positive drivers observed — do not assume strengths."]
-    verify_before = [f"Verify: {u}" for u in d.unknowns] or \
+    verify_before = _dedupe([f"Verify: {u}" for u in d.unknowns])[:3] or \
         ["No open unknowns recorded — confirm decision criteria anyway."]
-    avoid = [f"Do not repeat: {drv.summary}" for drv in neg[:3]] or \
+    avoid = _dedupe([f"Do not repeat: {drv.summary}" for drv in neg])[:3] or \
         ["No negative drivers observed."]
 
     biggest = d.unknowns[0] if d.unknowns else "No unknowns recorded in evidence."
-    buyer_questions = [f"Why is '{drv.summary.rstrip('.').lower()}' still a concern?" for drv in neg[:3]]
+    buyer_questions = _dedupe(
+        [f"What would resolve “{_short(drv.quote)}” for your team?" for drv in neg])[:3]
     while len(buyer_questions) < 3:
-        buyer_questions.append("What would make this an easy yes for your team?")
+        extra = "What would make this an easy yes for your team?"
+        if extra in buyer_questions:
+            break
+        buyer_questions.append(extra)
     proof = next((f'Show: "{drv.quote}" ({drv.category.value})' for drv in pos
                   if drv.category in (Category.ROI, Category.TRUST)),
                  "No ROI/trust proof captured in evidence.")
 
     return SellerCoaching(
-        situation=situation,
-        stress_next=stress_next,
-        verify_before=verify_before,
-        avoid=avoid,
-        biggest_unanswered_question=biggest,
-        buyer_questions=buyer_questions[:3],
-        proof_to_show=proof,
-        next_step_owner="Account team",
-        confidence="high" if won else "medium",
-        review_status=EvidenceLabel.NEEDS_REVIEW,
+        situation=situation, stress_next=stress_next, verify_before=verify_before, avoid=avoid,
+        biggest_unanswered_question=biggest, buyer_questions=buyer_questions[:3],
+        proof_to_show=proof, next_step_owner="Account team",
+        confidence="high" if won else "medium", review_status=EvidenceLabel.NEEDS_REVIEW,
     )
 
 
@@ -137,6 +159,8 @@ _HANDOFF_KIND: dict[Category, tuple[str, str]] = {
     Category.PRODUCT: ("unresolved", "Product"),
     Category.PRICING: ("dependency", "Deal Desk"),
 }
+# Categories whose commitments need explicit confirmation before delivery.
+_CONFIRM_CATS = {Category.PRICING, Category.PRODUCT, Category.INTEGRATION}
 
 
 def _build_handoff(d: DealDNA) -> ImplementationHandoff:
@@ -144,19 +168,29 @@ def _build_handoff(d: DealDNA) -> ImplementationHandoff:
     handoff = ImplementationHandoff(applicable=applicable)
     if not applicable:
         return handoff
+    seen: set[tuple] = set()
     for drv in d.drivers:
+        key = (drv.category, drv.quote)
+        if key in seen:
+            continue
+        seen.add(key)
         kind, responsible = _HANDOFF_KIND.get(drv.category, ("inferred_expectation", "Account team"))
+        summary = drv.summary
+        if drv.category in _CONFIRM_CATS:
+            summary += " [requires Product/Legal/Deal-Desk confirmation]"
         handoff.items.append(HandoffItem(
-            kind=kind, summary=drv.summary, quote=drv.quote, speaker=drv.speaker,
+            kind=kind, summary=summary, quote=drv.quote, speaker=drv.speaker,
             timestamp=drv.timestamp, source=drv.source, responsible=responsible,
-            risk_if_unresolved=("Expectation gap at kickoff." if drv.direction != Direction.NEGATIVE
-                                else "Unmet risk carried into onboarding."),
+            risk_if_unresolved=("Unmet risk carried into onboarding." if drv.direction == Direction.NEGATIVE
+                                else "Expectation gap at kickoff."),
         ))
-    handoff.expected_value = [drv.summary for drv in d.drivers
-                              if drv.direction == Direction.POSITIVE
-                              and drv.category in (Category.ROI, Category.NEED)]
-    handoff.risks = [f'{drv.summary} — "{drv.quote}"' for drv in d.drivers
-                     if drv.direction == Direction.NEGATIVE]
+    handoff.expected_value = _dedupe(
+        [f'{drv.summary} — "{_short(drv.quote)}"' for drv in d.drivers
+         if drv.direction == Direction.POSITIVE
+         and drv.category in (Category.ROI, Category.NEED, Category.TRUST)])
+    handoff.risks = _dedupe(
+        [f'{drv.summary} — "{_short(drv.quote)}"' for drv in d.drivers
+         if drv.direction == Direction.NEGATIVE])
     return handoff
 
 

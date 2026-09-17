@@ -44,3 +44,19 @@ def test_seller_coaching_pulls_biggest_unknown():
     assert d.seller_coaching is not None
     assert d.seller_coaching.biggest_unanswered_question.strip()
     assert len(d.seller_coaching.buyer_questions) == 3
+
+
+def test_seller_card_and_handoff_are_deduped():
+    # cyc-001 has two pricing drivers with identical summaries — must not repeat.
+    d = enrich_crossfunctional(synthesize_cycle("cyc-001"))
+    avoid = d.seller_coaching.avoid
+    assert len(avoid) == len(set(a.lower() for a in avoid)), "avoid list has duplicates"
+    d2 = enrich_crossfunctional(synthesize_cycle("cyc-002"))  # Won
+    keys = [(it.summary, it.quote) for it in d2.implementation_handoff.items]
+    assert len(keys) == len(set(keys)), "handoff items have duplicates"
+
+
+def test_actions_cite_a_buyer_quote():
+    d = enrich_crossfunctional(synthesize_cycle("cyc-001"))
+    # At least one action's insight references an actual quote (contains a curly quote mark).
+    assert any("“" in a.insight for a in _all_actions(d))
