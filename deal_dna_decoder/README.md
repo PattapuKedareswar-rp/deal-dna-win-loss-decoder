@@ -74,3 +74,48 @@ Person B can start immediately against `data/fixtures/sample_dealdna.json` witho
 Read-only Salesforce · no CRM write-back / outreach / auto-publish · human review before sharing ·
 synthetic data only · every finding traceable · abstains (`Needs Review` / `Not observed`) instead
 of guessing · a competitor mention is never auto-treated as a loss reason · API key is env-only.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    SRC[Approved export .txt/.vtt + Salesforce CSV, or synthetic demo] --> N[normalize]
+    N --> I[intake: consent / completeness gate]
+    I --> E[evidence coder: OpenAI or offline]
+    E --> S[synthesize: roll up by cycle]
+    S --> DNA[(DealDNA JSON, citation-locked)]
+    DNA --> X[enrich: 5 feeds + seller card + handoff]
+    DNA --> AU[audit + guardrail]
+    DNA --> RA[radar]
+    DNA --> PF[portfolio]
+    DNA --> AG[agent: OpenAI tool-calling loop]
+    X --> UI[Streamlit app: Portfolio / Ask Deal DNA / Deal Review]
+    AU --> UI
+    RA --> UI
+    PF --> UI
+    AG --> UI
+```
+
+## What's real vs simulated
+
+| Aspect | Status |
+|---|---|
+| Sales-call transcripts | **Simulated** by default (synthetic demo). Real path = approved `.txt`/`.vtt` export via `--ingest`. |
+| Salesforce outcomes | **Simulated** CSV by default; real path = read-only export in `data/approved_exports/salesforce/`. |
+| Live SharePoint/Salesforce/Clari connectors | **Not wired** from this repo (needs an approved environment); documented drop-in export is the honest path. |
+| Extraction, review loop, feeds, radar, portfolio, agent | **Real code**, runs offline or on OpenAI. |
+| Evaluation scores | Real computation on a **small, author-labeled synthetic gold set** — directional, not production accuracy. |
+
+## Accessibility
+
+Light, high-contrast RealPage theme (navy on white). State is **never signaled by color alone** —
+Won/Lost/risk/review status always pair color with a text label or icon. Charts are horizontal bars
+with visible value labels; genome markers pair color with an icon, direction word, and timestamp.
+Controls are standard, keyboard-navigable Streamlit widgets.
+
+## Reviewer access check
+
+Runs with **no credentials** in offline mode: `python -m streamlit run app/streamlit_app.py` (or
+`python -m deal_dna.run --demo`). A teammate who did not build a given part should open the app, switch
+to **Deal Review**, run a rep→manager review, and confirm it persists across refresh. Record reviewer
+name, date/time PT, and result in `00_Admin/STATUS.md`. See `DEMO_SCRIPT.md` for the exact walkthrough.

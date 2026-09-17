@@ -28,10 +28,17 @@ Person B adds the five cross-functional feeds, the **Deal DNA genome** view, and
 review loop (integrated through a fixed seam).
 
 ## Demonstrated result (measured on synthetic data)
-- **Top-driver agreement vs human gold set: 100% (7/7).**
+- **Top-driver agreement vs human gold set: 100% (7/7)** — small, author-labeled synthetic gold set;
+  directional, not production accuracy.
 - **Citation coverage: 100%** — every driver carries a verbatim quote + speaker + timestamp + source.
 - **Competitor false-alarm rate: 0%** — a competitor mention is never auto-treated as a loss reason.
-- **11/11 automated tests pass.** Live OpenAI path + offline fallback both verified.
+- **36/36 automated tests pass** (incl. mocked-LLM path + messy-input abstention). Live OpenAI path +
+  offline fallback both verified.
+
+## Reviewer access check
+Runs with no credentials in offline mode. A non-author teammate should follow `DEMO_SCRIPT.md`, run a
+rep→manager review in the app, refresh to confirm it persists, and record: reviewer name, date/time PT,
+result, and commit. See `00_Admin/STATUS.md` for the evidence log.
 
 ## How judging criteria are met
 | Criterion | Evidence |
