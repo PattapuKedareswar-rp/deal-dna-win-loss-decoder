@@ -1,0 +1,4 @@
+[00:00:05] Rep - A. Morgan: Thanks for the time. Where are you feeling the most pain today?
+[00:00:48] Buyer - VP Operations: Our team still sets renewals manually and it's painful across the portfolio.
+[00:02:06] Buyer - VP Operations: We're also evaluating Entrata, who's our incumbent on a couple of sites.
+[00:03:25] Rep - A. Morgan: Understood. Our AI revenue management automates that rent optimization.

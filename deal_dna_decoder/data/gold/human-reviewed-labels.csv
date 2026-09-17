@@ -1,0 +1,6 @@
+cycle_id,outcome,top_driver_category,human_note
+cyc-001,Lost,pricing,Price/TCO too high vs incumbent discount
+cyc-002,Won,roi,Consolidation + ROI + strong references
+cyc-003,Stalled / No Decision,timing,Budget froze after acquisition
+cyc-004,Lost,integration,Open-API gap; incumbent bundling
+cyc-006,Lost,demo,Demo friction; missing automated renewals

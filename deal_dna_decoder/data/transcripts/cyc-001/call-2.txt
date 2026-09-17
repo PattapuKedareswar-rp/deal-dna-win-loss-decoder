@@ -1,0 +1,5 @@
+[00:00:12] Rep - A. Morgan: Any reaction to the demo we sent over?
+[00:01:15] Buyer - CFO: The revenue lift looked good, but once you add implementation fees the total cost is too high.
+[00:02:40] Buyer - CFO: Honestly your list price is about 20% above the other bid and finance won't approve that budget.
+[00:04:00] Buyer - VP Operations: We're also worried about the migration and onboarding timeline.
+[00:05:00] Buyer - CFO: Entrata offered a multi-year lock-in discount to keep us.

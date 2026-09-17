@@ -1,0 +1,12 @@
+{
+  "cycle_id": "cyc-010",
+  "call_id": "call-1",
+  "opportunity_id": "006A010",
+  "account": "Oakhaven Communities",
+  "call_date": "2026-06-15",
+  "source_system": "SharePoint (synthetic)",
+  "product": "AI Revenue Management",
+  "stage": "Closed Won",
+  "consent": "approved",
+  "transcript_status": "Full transcript available"
+}

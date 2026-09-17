@@ -1,0 +1,115 @@
+{
+  "cycle_id": "cyc-001",
+  "opportunity_id": "006A001",
+  "account": "Cedar Ridge Residential",
+  "product_families": [
+    "AI Revenue Management"
+  ],
+  "outcome": "Lost",
+  "outcome_source": "Salesforce IsWon",
+  "transcript_status": "Full transcript available",
+  "call_count": 2,
+  "drivers": [
+    {
+      "category": "need",
+      "direction": "positive",
+      "label": "Observed",
+      "summary": "Consolidation / efficiency need.",
+      "quote": "Our team still sets renewals manually and it's painful across the portfolio.",
+      "speaker": "Buyer - VP Operations",
+      "speaker_role": "VP Operations",
+      "timestamp": "00:00:48",
+      "source": "data/transcripts/cyc-001/call-1.txt",
+      "confidence": "medium"
+    },
+    {
+      "category": "pricing",
+      "direction": "negative",
+      "label": "Observed",
+      "summary": "Price / total cost of ownership concern.",
+      "quote": "The revenue lift looked good, but once you add implementation fees the total cost is too high.",
+      "speaker": "Buyer - CFO",
+      "speaker_role": "CFO",
+      "timestamp": "00:01:15",
+      "source": "data/transcripts/cyc-001/call-2.txt",
+      "confidence": "high"
+    },
+    {
+      "category": "roi",
+      "direction": "positive",
+      "label": "Observed",
+      "summary": "Positive ROI / revenue-lift signal.",
+      "quote": "The revenue lift looked good, but once you add implementation fees the total cost is too high.",
+      "speaker": "Buyer - CFO",
+      "speaker_role": "CFO",
+      "timestamp": "00:01:15",
+      "source": "data/transcripts/cyc-001/call-2.txt",
+      "confidence": "high"
+    },
+    {
+      "category": "pricing",
+      "direction": "negative",
+      "label": "Observed",
+      "summary": "Price / total cost of ownership concern.",
+      "quote": "Honestly your list price is about 20% above the other bid and finance won't approve that budget.",
+      "speaker": "Buyer - CFO",
+      "speaker_role": "CFO",
+      "timestamp": "00:02:40",
+      "source": "data/transcripts/cyc-001/call-2.txt",
+      "confidence": "high"
+    },
+    {
+      "category": "risk",
+      "direction": "negative",
+      "label": "Observed",
+      "summary": "Perceived risk / switching cost.",
+      "quote": "We're also worried about the migration and onboarding timeline.",
+      "speaker": "Buyer - VP Operations",
+      "speaker_role": "VP Operations",
+      "timestamp": "00:04:00",
+      "source": "data/transcripts/cyc-001/call-2.txt",
+      "confidence": "medium"
+    }
+  ],
+  "competitor_mentions": [
+    {
+      "name": "Entrata",
+      "quote": "We're also evaluating Entrata, who's our incumbent on a couple of sites.",
+      "speaker": "Buyer - VP Operations",
+      "timestamp": "00:02:06",
+      "source": "data/transcripts/cyc-001/call-1.txt",
+      "is_loss_reason": false,
+      "note": "Mention only; not established as a loss reason."
+    },
+    {
+      "name": "Entrata",
+      "quote": "Entrata offered a multi-year lock-in discount to keep us.",
+      "speaker": "Buyer - CFO",
+      "timestamp": "00:05:00",
+      "source": "data/transcripts/cyc-001/call-2.txt",
+      "is_loss_reason": false,
+      "note": "Mention only; not established as a loss reason."
+    }
+  ],
+  "unknowns": [
+    "Decision authority not observed."
+  ],
+  "cross_function_actions": {
+    "enablement": [],
+    "product": [],
+    "pricing": [],
+    "product_marketing": [],
+    "implementations": []
+  },
+  "seller_coaching": null,
+  "implementation_handoff": null,
+  "review": {
+    "status": "Needs Review",
+    "rep": null,
+    "manager": null,
+    "reviewed_at": null,
+    "corrections": []
+  },
+  "generated_at": "2026-09-17T13:08:39.810696+00:00",
+  "data_note": "SYNTHETIC sample data \u2014 not real customer data."
+}
