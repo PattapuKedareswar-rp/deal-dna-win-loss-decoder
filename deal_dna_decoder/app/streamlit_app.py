@@ -44,7 +44,7 @@ def _now() -> str:
 
 
 # ---------- data helpers (cached; offline & deterministic) ----------
-@st.cache_data(show_spinner=False)
+@st.cache_data(show_spinner="Analyzing deals with the current engine…")
 def _index() -> list[dict]:
     rows = []
     for c in list_cycles():
@@ -58,7 +58,7 @@ def _index() -> list[dict]:
     return rows
 
 
-@st.cache_data(show_spinner=False)
+@st.cache_data(show_spinner="Building portfolio intelligence…")
 def _portfolio():
     deals = [synthesize_cycle(c) for c in list_cycles()]
     return build_portfolio(deals), build_radar(deals)
