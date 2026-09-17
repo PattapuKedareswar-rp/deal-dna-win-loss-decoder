@@ -35,6 +35,18 @@ review loop (integrated through a fixed seam).
 - **36/36 automated tests pass** (incl. mocked-LLM path + messy-input abstention). Live OpenAI path +
   offline fallback both verified.
 
+## Validated on the REAL approved data (run locally, not committed)
+We ingested the **27 approved SharePoint `.txt` transcripts** (Clari/Gong format) into 26 cycles via
+`--ingest` and ran the pipeline:
+- Extracted **citation-locked drivers with verbatim quotes + timestamps** from real calls.
+- The agent (real **gpt-4o**) surfaced the **competitive picture**: Yardi (15 calls), Entrata (6),
+  AppFolio, and — beyond our built-in list — **G5, Funnel, MRI, RentManager**; plus recurring themes
+  (integration, risk, timing, pricing, demo).
+- **Outcomes remain `Needs Review`** because Salesforce Won/Lost was not available to us — the tool
+  refuses to guess outcome from filenames (per the brief). Adding Salesforce outcomes to the index
+  lights up win-rate, battlecard loss rates, and win/loss drivers.
+- Raw transcripts stay **local and git-ignored** — never pushed to the public repo.
+
 ## Reviewer access check
 Runs with no credentials in offline mode. A non-author teammate should follow `DEMO_SCRIPT.md`, run a
 rep→manager review in the app, refresh to confirm it persists, and record: reviewer name, date/time PT,
@@ -55,10 +67,11 @@ result, and commit. See `00_Admin/STATUS.md` for the evidence log.
 - Evidence log with T-01/T-02/T-03 results: `00_Admin/STATUS.md`.
 
 ## Sources, reuse & permissions
-- **Reused:** none (built during the event). **Created:** all code + synthetic data.
-- Real deployment would connect approved **SharePoint** transcripts + read-only **Salesforce**
-  (documented in `DEAL_DNA_MASTER_PROMPT.md`); this prototype uses synthetic transcripts so no
-  customer data is exposed.
+- **Reused:** none (built during the event). **Created:** all code + synthetic demo data.
+- **Real evidence:** the 27 approved SharePoint transcripts (Deal DNA — Transcripts folder) were used
+  **locally** in the approved environment via `--ingest`; they are **git-ignored** and never committed.
+- Read-only **Salesforce** is the outcome authority; not connected here, so outcomes are `Needs Review`.
+- The public repo contains **only code + synthetic data** — no customer transcripts, outcomes, or keys.
 
 ## Limits & next step
 - Synthetic data is a pilot/taxonomy, not a production predictive model.
