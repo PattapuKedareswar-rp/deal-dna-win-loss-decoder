@@ -1,0 +1,23 @@
+# Secrets — never commit
+.env
+*.key
+*.pem
+
+# Internal hackathon materials (RealPage employee emails / SharePoint links) — do not publish
+05_Reference/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Generated outputs
+exports/
+02_Working/deal_dna_decoder/exports/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
