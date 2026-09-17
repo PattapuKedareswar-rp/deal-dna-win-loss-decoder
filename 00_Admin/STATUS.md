@@ -9,8 +9,8 @@
 Judging Sep 18–25, 2026; winners announced at the Sep 30, 2026 Town Hall.
 
 ## Current goal
-Finish integrated prototype: Person A evidence core (done) + Person B cross-functional feeds, genome
-UI, and rep→manager review loop (in progress), then final package.
+Integrated prototype COMPLETE (Person A core + Person B cross-functional feeds, genome UI, and
+rep→manager review loop). Remaining: reviewer walkthrough + post final package to the team channel.
 
 ## Completed
 - Evidence pipeline: `normalize → intake → evidence → synthesize` producing a citation-locked
@@ -18,16 +18,17 @@ UI, and rep→manager review loop (in progress), then final package.
 - `audit` (traceability + advisory-only guardrail), `radar` (recurring-signal, false-alarm guard),
   `evaluate` (vs human gold set), `run` CLI incl. `--demo`.
 - 18 synthetic cycles / 22 calls; OpenAI (gpt-4o) path validated + offline fallback.
-- **11/11 tests pass.** Evaluation: **100% top-driver agreement (7/7) · 100% citation coverage ·
-  0% competitor false-alarm.**
+- **Person B merged (PR #1):** `crossfunction.py` (5 feeds + seller card + handoff), `render.py`
+  (genome HTML), `app/streamlit_app.py` (rep→manager review + audit trail). Integrated via the
+  `synthesize_cycle → enrich_crossfunctional → render_briefing` seam — hooks in `run.py` auto-wire it.
+- **19/19 tests pass** (11 core + 8 enrichment/render). Evaluation: **100% top-driver agreement (7/7) ·
+  100% citation coverage · 0% competitor false-alarm.** `run --all` emits enriched JSON + genome HTML.
 
 ## In progress
-- Person B — `crossfunction.py` (5 feeds + seller card + handoff), `render.py` (genome), `app/`
-  (review UI). Integrates via the `synthesize_cycle → enrich_crossfunctional → render_briefing` seam
-  (hooks already wired in `run.py`).
+- Final reviewer walkthrough + submission package post to the team Teams channel.
 
 ## Next best action
-- Person A: support Person B integration (Sync 2/3); finalize `03_Final_Submission/README.md`.
+- Run the MVP demo for a non-author reviewer; finalize `03_Final_Submission/README.md`; post to Teams.
 
 ## Test and evidence log
 
