@@ -15,6 +15,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+import altair as alt
 import pandas as pd
 import streamlit as st
 
@@ -93,73 +94,102 @@ def _status_chip(status: str) -> str:
     return f'<span class="rp-status {_STATUS_CLASS.get(status, "needs-review")}">Review: {status}</span>'
 
 
+def _engine_label() -> str:
+    return "Offline heuristics" if config.is_offline() else f"OpenAI agent · {config.OPENAI_MODEL}"
+
+
+def _h(title: str, sub: str = "") -> None:
+    st.markdown(f'<div class="rp-section">{title}</div>', unsafe_allow_html=True)
+    if sub:
+        st.caption(sub)
+
+
+def _hbar(pairs, color: str, pct: bool = False):
+    """Readable horizontal bar chart with value labels (no truncated x-axis text)."""
+    if not pairs:
+        return None
+    df = pd.DataFrame(list(pairs), columns=["label", "value"])
+    vmax = max(v for _, v in pairs) or 1
+    domain = [0, (1.0 if pct else vmax) * 1.18]
+    base = alt.Chart(df).encode(
+        y=alt.Y("label:N", sort="-x", title=None,
+                axis=alt.Axis(labelFontSize=13, labelLimit=260, labelColor="#0A1420")),
+        x=alt.X("value:Q", title=None, axis=None, scale=alt.Scale(domain=domain)),
+    )
+    bars = base.mark_bar(color=color, cornerRadiusEnd=4, size=24)
+    text = base.mark_text(align="left", dx=6, fontSize=13, color="#0A1420").encode(
+        text=alt.Text("value:Q", format=".0%" if pct else "d"))
+    return ((bars + text).properties(height=len(df) * 42 + 12)
+            .configure_view(strokeWidth=0).configure_axis(grid=False))
+
+
 # ---------- Portfolio page ----------
 def page_portfolio() -> None:
     report, radar = _portfolio()
     st.markdown(
-        '<div class="rp-hero"><h1>Deal DNA — Executive Portfolio</h1>'
-        '<div class="sub">Why we win and lose, decoded from sales conversations — '
-        'evidence-backed, advisory, human-in-the-loop.</div>'
-        '<div style="margin-top:8px"><span class="pill">SYNTHETIC data</span>'
-        '<span class="pill">read-only</span><span class="pill">no CRM write-back</span></div></div>',
+        f'<div class="rp-hero"><h1>Deal DNA — Executive Portfolio</h1>'
+        f'<div class="sub">Why we win and lose, decoded from sales conversations — '
+        f'evidence-backed, advisory, human-in-the-loop.</div>'
+        f'<div style="margin-top:10px"><span class="pill">🧠 Engine: {_engine_label()}</span>'
+        f'<span class="pill">SYNTHETIC data</span><span class="pill">read-only</span>'
+        f'<span class="pill">no CRM write-back</span></div></div>',
         unsafe_allow_html=True)
+    st.write("")
 
-    st.markdown(
-        '<div class="rp-kpis">'
-        + _kpi(f"Win rate ({report.won + report.lost} closed)", f"{report.win_rate:.0%}", "good")
-        + _kpi("Won", report.won, "good") + _kpi("Lost", report.lost, "bad")
-        + _kpi("Stalled", report.stalled, "warn") + _kpi("Cycles", report.total_cycles)
-        + "</div>", unsafe_allow_html=True)
+    k = st.columns(5)
+    k[0].markdown(_kpi(f"Win rate · {report.won + report.lost} closed", f"{report.win_rate:.0%}", "good"),
+                  unsafe_allow_html=True)
+    k[1].markdown(_kpi("Won", report.won, "good"), unsafe_allow_html=True)
+    k[2].markdown(_kpi("Lost", report.lost, "bad"), unsafe_allow_html=True)
+    k[3].markdown(_kpi("Stalled", report.stalled, "warn"), unsafe_allow_html=True)
+    k[4].markdown(_kpi("Cycles", report.total_cycles), unsafe_allow_html=True)
 
-    st.markdown('<div class="rp-section">Win rate by product</div>', unsafe_allow_html=True)
-    prod_df = pd.DataFrame(
-        [{"product": p, "win_rate": round(wr * 100), "closed": n}
-         for p, wr, n in report.win_rate_by_product]).set_index("product")
-    st.bar_chart(prod_df[["win_rate"]], color="#082649", height=240)
+    _h("Win rate by product")
+    ch = _hbar([(p, wr) for p, wr, n in report.win_rate_by_product], "#082649", pct=True)
+    if ch is not None:
+        st.altair_chart(ch, use_container_width=True)
 
-    c1, c2 = st.columns(2)
+    c1, c2 = st.columns(2, gap="large")
     with c1:
-        st.markdown('<div class="rp-section">Top win drivers</div>', unsafe_allow_html=True)
-        if report.top_win_drivers:
-            st.bar_chart(pd.DataFrame(report.top_win_drivers, columns=["driver", "count"])
-                         .set_index("driver"), color="#2E8B57", height=220)
+        _h("Top win drivers", "Positive signals on Won deals")
+        ch = _hbar(report.top_win_drivers, "#2E8B57")
+        if ch is not None:
+            st.altair_chart(ch, use_container_width=True)
     with c2:
-        st.markdown('<div class="rp-section">Top loss drivers</div>', unsafe_allow_html=True)
-        if report.top_loss_drivers:
-            st.bar_chart(pd.DataFrame(report.top_loss_drivers, columns=["driver", "count"])
-                         .set_index("driver"), color="#D2402A", height=220)
+        _h("Top loss drivers", "Negative signals on Lost deals")
+        ch = _hbar(report.top_loss_drivers, "#D2402A")
+        if ch is not None:
+            st.altair_chart(ch, use_container_width=True)
 
-    st.markdown('<div class="rp-section">Competitor battlecards</div>', unsafe_allow_html=True)
-    st.caption("Where we are exposed and why — each with evidence. A mention is not a loss reason.")
+    _h("Competitor battlecards",
+       "Where we are exposed and why — each with evidence. A mention is not a loss reason.")
     for b in report.battlecards:
         klass = "hot" if b.loss_rate >= 0.75 else "mid" if b.loss_rate >= 0.4 else "cool"
         drivers = ", ".join(f"{c} ({n})" for c, n in b.top_loss_drivers) or "—"
-        quote = f'<blockquote>“{b.sample_quote[:120]}”</blockquote>' if b.sample_quote else ""
+        quote = f'<blockquote>“{b.sample_quote[:140]}”</blockquote>' if b.sample_quote else ""
         st.markdown(
-            f'<div class="rp-bc {klass}"><h4>{b.competitor}</h4>'
-            f'<div class="meta">{b.deals} deal(s) · Won {b.won} / Lost {b.lost} · '
-            f'loss rate {b.loss_rate:.0%} · top loss drivers: {drivers}</div>{quote}</div>',
+            f'<div class="rp-bc {klass}"><h4>{b.competitor} &nbsp;'
+            f'<span style="font-weight:400;font-size:12px;color:#495E83">loss rate {b.loss_rate:.0%}</span></h4>'
+            f'<div class="meta">{b.deals} deal(s) · Won {b.won} / Lost {b.lost} '
+            f'· top loss drivers: {drivers}</div>{quote}</div>',
             unsafe_allow_html=True)
 
-    c3, c4 = st.columns(2)
+    c3, c4 = st.columns(2, gap="large")
     with c3:
-        st.markdown('<div class="rp-section">Enablement coaching hotspots</div>', unsafe_allow_html=True)
-        if report.coaching_hotspots:
-            st.bar_chart(pd.DataFrame(report.coaching_hotspots, columns=["theme", "count"])
-                         .set_index("theme"), color="#AE6B29", height=220)
+        _h("Enablement coaching hotspots", "Recurring rep-facing friction to train on")
+        ch = _hbar(report.coaching_hotspots, "#AE6B29")
+        if ch is not None:
+            st.altair_chart(ch, use_container_width=True)
     with c4:
-        st.markdown('<div class="rp-section">Market-signal radar</div>', unsafe_allow_html=True)
-        st.caption(radar.note)
-        if radar.recurring_hesitations:
-            st.write("**Recurring hesitations**")
-            for s in radar.recurring_hesitations:
-                st.write(f"- {s.label}: {s.count} cycles")
-        if radar.alternative_software:
-            st.write("**Alternative software mentioned**")
-            for s in radar.alternative_software:
-                st.write(f"- {s.label}: {s.count} cycles")
+        _h("Market-signal radar", radar.note)
+        for s in radar.recurring_hesitations:
+            st.markdown(f'<div class="rp-card">🔁 <b>{s.label}</b> — recurring in {s.count} cycles</div>',
+                        unsafe_allow_html=True)
+        for s in radar.alternative_software:
+            st.markdown(f'<div class="rp-card">🏷 <b>{s.label}</b> — mentioned in {s.count} cycles</div>',
+                        unsafe_allow_html=True)
 
-    html = (config.OUTPUTS_DIR / "portfolio.html")
+    st.write("")
     st.download_button("⬇ Download portfolio dashboard (HTML)",
                        data=_portfolio_html(report), file_name="portfolio.html", mime="text/html")
 
@@ -194,7 +224,10 @@ def page_review() -> None:
     filtered = [r for r in idx if _match(r)]
     st.markdown('<div class="rp-hero"><h1>Deal DNA — Win/Loss Review</h1>'
                 '<div class="sub">Open a deal to see its evidence genome, run the rep → manager '
-                'review, and route cross-functional actions.</div></div>', unsafe_allow_html=True)
+                'review, and route cross-functional actions.</div>'
+                f'<div style="margin-top:10px"><span class="pill">🧠 Engine: {_engine_label()}</span>'
+                '<span class="pill">advisory</span><span class="pill">human-in-the-loop</span>'
+                '</div></div>', unsafe_allow_html=True)
 
     if not filtered:
         st.warning("No deals match the current filters.")
