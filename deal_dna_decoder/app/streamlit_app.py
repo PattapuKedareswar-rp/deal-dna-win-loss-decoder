@@ -114,6 +114,17 @@ def _data_pill() -> str:
     return f'<span class="pill">📁 Data: {label}</span>'
 
 
+def _ensure_data() -> None:
+    """Generate synthetic demo data on a fresh clone (data dirs are git-ignored)."""
+    if list_cycles():
+        return
+    import subprocess
+    import sys
+    gen = config.DATA_DIR / "generate_data.py"
+    if gen.exists():
+        subprocess.run([sys.executable, str(gen)], check=False)
+
+
 def _h(title: str, sub: str = "") -> None:
     st.markdown(f'<div class="rp-section">{title}</div>', unsafe_allow_html=True)
     if sub:
@@ -499,6 +510,7 @@ def main() -> None:
     st.set_page_config(page_title="Deal DNA", layout="wide", page_icon="🧬")
     st.markdown(f"<style>{_CSS}</style>", unsafe_allow_html=True)
 
+    _ensure_data()
     if not list_cycles():
         st.error("No cycles found. Run:  python data/generate_data.py")
         return

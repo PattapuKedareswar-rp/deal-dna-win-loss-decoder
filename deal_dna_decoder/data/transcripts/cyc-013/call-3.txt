@@ -1,3 +1,0 @@
-[00:00:10] Rep - F. Okafor: Any last concerns before we move forward?
-[00:01:06] Buyer - Ops Director: The implementation plan de-risked the migration for our team.
-[00:02:00] Buyer - Ops Director: That reassured us on the onboarding risk.

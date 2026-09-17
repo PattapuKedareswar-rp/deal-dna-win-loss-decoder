@@ -1,3 +1,0 @@
-[00:00:08] Rep - D. Patel: How did the demo go with the wider team?
-[00:00:55] Buyer - Ops Manager: The demo felt clunky when you switched screens and lost the room.
-[00:02:00] Buyer - Ops Manager: Automated renewals weren't obvious — it looked like a missing feature.

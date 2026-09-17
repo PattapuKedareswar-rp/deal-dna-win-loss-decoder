@@ -1,4 +1,0 @@
-[00:00:09] Rep - C. Diaz: What's driving the evaluation?
-[00:00:58] Buyer - Controller: We need an open API to our data warehouse and that seems to be on your roadmap still.
-[00:02:12] Buyer - Controller: Yardi bundled the payments module for free to retain the account.
-[00:03:18] Buyer - Controller: There's real switching cost risk and my team is hesitant.

@@ -1,4 +1,0 @@
-[00:00:07] Rep - D. Patel: How did the demo land with the team?
-[00:00:52] Buyer - Revenue Manager: The demo felt clunky when you switched screens; automated renewals weren't obvious.
-[00:02:08] Buyer - Revenue Manager: A competitor demoed automated renewals end to end.
-[00:03:10] Buyer - VP Ops: We have a missing feature gap for our student housing workflow.

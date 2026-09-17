@@ -1,0 +1,2 @@
+file,cycle_id,opportunity_id,account,product,stage,outcome,source_url,consent,transcript_status
+example_call.txt,cyc-example,006XXXXXXXXXXXX,Example Account,AI Revenue Management,Closed Lost,Lost,https://realpage.sharepoint.com/.../example_call.txt,approved,Full transcript available

@@ -1,2 +1,0 @@
-[00:00:09] Rep - C. Diaz: What drove the decision?
-[00:01:00] Buyer - Controller: Your price was too high once implementation fees were added.
